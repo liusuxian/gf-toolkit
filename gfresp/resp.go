@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-23 17:47:10
+ * @LastEditTime: 2024-01-25 16:33:05
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -10,9 +10,12 @@
 package gfresp
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/errors/gcode"
+	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/util/gconv"
 	"net/http"
@@ -70,15 +73,28 @@ func (resp Response) Resp(req *ghttp.Request) {
 	req.Response.WriteJson(resp)
 }
 
+// RespCtx 响应数据返回
+func (resp Response) RespCtx(ctx context.Context) {
+	req := g.RequestFromCtx(ctx)
+	req.Response.WriteJson(resp)
+}
+
 // RespExit 响应数据返回并退出
 func (resp Response) RespExit(req *ghttp.Request) {
 	req.Response.WriteJson(resp)
 	req.Exit()
 }
 
+// RespCtxExit 响应数据返回并退出
+func (resp Response) RespCtxExit(ctx context.Context) {
+	req := g.RequestFromCtx(ctx)
+	req.Response.WriteJson(resp)
+	req.Exit()
+}
+
 // Succ 成功
 func Succ(data any) (resp Response) {
-	return Response{gcode.CodeOK.Code(), gcode.CodeOK.Message(), data}
+	return Response{Code: gcode.CodeOK.Code(), Message: gcode.CodeOK.Message(), Data: data}
 }
 
 // Fail 失败
@@ -87,22 +103,36 @@ func Fail(code int, msg string, data ...any) (resp Response) {
 	if len(data) > 0 {
 		rData = data[0]
 	}
-	return Response{code, msg, rData}
+	return Response{Code: code, Message: msg, Data: rData}
 }
 
 // Unauthorized 认证失败
 func Unauthorized(msg string, data any) (resp Response) {
-	return Response{http.StatusUnauthorized, msg, data}
+	return Response{Code: http.StatusUnauthorized, Message: msg, Data: data}
 }
 
 // RespFail 返回失败
-func RespFail(req *ghttp.Request, rCode gcode.Code, data ...any) {
+func RespFail(req *ghttp.Request, err error, data ...any) {
+	rCode := gerror.Code(err)
 	Fail(rCode.Code(), rCode.Message(), data...).Resp(req)
 }
 
+// RespFailCtx 返回失败
+func RespFailCtx(ctx context.Context, err error, data ...any) {
+	rCode := gerror.Code(err)
+	Fail(rCode.Code(), rCode.Message(), data...).RespCtx(ctx)
+}
+
 // RespFailExit 返回失败并退出
-func RespFailExit(req *ghttp.Request, rCode gcode.Code, data ...any) {
+func RespFailExit(req *ghttp.Request, err error, data ...any) {
+	rCode := gerror.Code(err)
 	Fail(rCode.Code(), rCode.Message(), data...).RespExit(req)
+}
+
+// RespFailCtxExit 返回失败并退出
+func RespFailCtxExit(ctx context.Context, err error, data ...any) {
+	rCode := gerror.Code(err)
+	Fail(rCode.Code(), rCode.Message(), data...).RespCtxExit(ctx)
 }
 
 // RespSucc 返回成功
@@ -110,9 +140,19 @@ func RespSucc(req *ghttp.Request, data any) {
 	Succ(data).Resp(req)
 }
 
+// RespSuccCtx 返回成功
+func RespSuccCtx(ctx context.Context, data any) {
+	Succ(data).RespCtx(ctx)
+}
+
 // RespSuccExit 返回成功并退出
 func RespSuccExit(req *ghttp.Request, data any) {
 	Succ(data).RespExit(req)
+}
+
+// RespSuccCtxExit 返回成功并退出
+func RespSuccCtxExit(ctx context.Context, data any) {
+	Succ(data).RespCtxExit(ctx)
 }
 
 // Redirect 重定向

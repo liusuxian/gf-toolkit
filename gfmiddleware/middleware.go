@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:15:17
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-24 23:14:01
+ * @LastEditTime: 2024-01-25 15:38:24
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -13,11 +13,12 @@ import (
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/liusuxian/gf-toolkit/gflogger"
 	"github.com/liusuxian/gf-toolkit/gfresp"
 	"net/http"
 )
 
-// HandlerResponse 自定义返回中间件
+// HandlerResponse 自定义返回中间件，会默认打印错误
 func HandlerResponse(req *ghttp.Request) {
 	req.Middleware.Next()
 
@@ -51,7 +52,12 @@ func HandlerResponse(req *ghttp.Request) {
 			rCode = gcode.CodeOK
 		}
 	}
-
+	// 打印错误
+	if reqErr := req.GetError(); reqErr != nil {
+		req.SetError(nil)
+		gflogger.Errorf(req.GetCtx(), "HandlerResponse Error: %v", reqErr)
+	}
+	// 返回
 	gfresp.Response{
 		Code:    rCode.Code(),
 		Message: rCode.Message(),
