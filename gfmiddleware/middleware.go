@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:15:17
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-25 21:02:14
+ * @LastEditTime: 2024-01-25 21:12:59
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -55,7 +55,7 @@ func HandlerResponse(req *ghttp.Request) {
 	// 打印错误
 	if reqErr := req.GetError(); reqErr != nil {
 		req.SetError(nil)
-		gflogger.Log(2, "error").Errorf(req.GetCtx(), "HandlerResponse Error: %v", reqErr)
+		gflogger.Errorf(req.GetCtx(), "HandlerResponse Error: %v", reqErr)
 	}
 	// 返回
 	gfresp.Response{

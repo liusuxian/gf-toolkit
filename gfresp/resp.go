@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-25 21:03:25
+ * @LastEditTime: 2024-01-25 21:13:48
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -117,7 +117,7 @@ func RespFail(req *ghttp.Request, err error, data ...any) {
 		unwrapErr error
 	)
 	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
-		gflogger.Log(2, "error").Errorf(req.GetCtx(), "RespFail Error: %v", unwrapErr)
+		gflogger.Errorf(req.GetCtx(), "RespFail Error: %v", unwrapErr)
 	}
 	Fail(rCode.Code(), rCode.Message(), data...).Resp(req)
 }
@@ -129,7 +129,7 @@ func RespFailCtx(ctx context.Context, err error, data ...any) {
 		unwrapErr error
 	)
 	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
-		gflogger.Log(2, "error").Errorf(ctx, "RespFailCtx Error: %v", unwrapErr)
+		gflogger.Errorf(ctx, "RespFailCtx Error: %v", unwrapErr)
 	}
 	Fail(rCode.Code(), rCode.Message(), data...).RespCtx(ctx)
 }
@@ -141,7 +141,7 @@ func RespFailExit(req *ghttp.Request, err error, data ...any) {
 		unwrapErr error
 	)
 	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
-		gflogger.Log(2, "error").Errorf(req.GetCtx(), "RespFailExit Error: %v", unwrapErr)
+		gflogger.Errorf(req.GetCtx(), "RespFailExit Error: %v", unwrapErr)
 	}
 	Fail(rCode.Code(), rCode.Message(), data...).RespExit(req)
 }
@@ -153,7 +153,7 @@ func RespFailCtxExit(ctx context.Context, err error, data ...any) {
 		unwrapErr error
 	)
 	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
-		gflogger.Log(2, "error").Errorf(ctx, "RespFailCtxExit Error: %v", unwrapErr)
+		gflogger.Errorf(ctx, "RespFailCtxExit Error: %v", unwrapErr)
 	}
 	Fail(rCode.Code(), rCode.Message(), data...).RespCtxExit(ctx)
 }
