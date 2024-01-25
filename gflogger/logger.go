@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 20:59:43
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 00:59:53
+ * @LastEditTime: 2024-01-26 01:17:16
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -110,8 +110,8 @@ func defaultLog(name ...string) (logger *glog.Logger) {
 }
 
 // HandleAccessLog
-func HandleAccessLog(req *ghttp.Request, msg string) {
-	logger := Log(0, "access")
+func HandleAccessLog(req *ghttp.Request, skip int) {
+	logger := Log(skip, "access")
 	if logger == nil {
 		return
 	}
@@ -129,16 +129,16 @@ func HandleAccessLog(req *ghttp.Request, msg string) {
 		float64(req.LeaveTime-req.EnterTime)/1000,
 		req.GetClientIp(), req.Referer(), req.UserAgent(),
 	)
-	logger.Debug(req.Context(), msg, content)
+	logger.Debug(req.Context(), content)
 }
 
 // HandleErrorLog
-func HandleErrorLog(req *ghttp.Request, msg string, err error) {
+func HandleErrorLog(req *ghttp.Request, skip int, err error) {
 	if err == nil {
 		return
 	}
 
-	logger := Log(0, "error")
+	logger := Log(skip, "error")
 	if logger == nil {
 		return
 	}
@@ -170,5 +170,5 @@ func HandleErrorLog(req *ghttp.Request, msg string, err error) {
 		content += ", " + err.Error()
 	}
 	req.SetError(nil)
-	logger.Error(req.Context(), msg, content)
+	logger.Error(req.Context(), content)
 }

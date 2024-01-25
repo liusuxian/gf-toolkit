@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:15:17
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 00:53:11
+ * @LastEditTime: 2024-01-26 01:33:40
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -18,8 +18,18 @@ import (
 	"net/http"
 )
 
-// HandlerResponse 自定义返回中间件，会默认打印错误
+// HandlerResponsePrintErr 自定义返回中间件，会默认打印错误
+func HandlerResponsePrintErr(req *ghttp.Request) {
+	doHandlerResponse(req, true)
+}
+
+// HandlerResponse 自定义返回中间件
 func HandlerResponse(req *ghttp.Request) {
+	doHandlerResponse(req, false)
+}
+
+// doHandlerResponse
+func doHandlerResponse(req *ghttp.Request, isPrint bool) {
 	req.Middleware.Next()
 
 	if req.Response.BufferLength() > 0 {
@@ -52,8 +62,12 @@ func HandlerResponse(req *ghttp.Request) {
 			rCode = gcode.CodeOK
 		}
 	}
-	// 打印错误
-	gflogger.HandleErrorLog(req, "HandlerResponse Error: ", req.GetError())
+	// 是否打印错误
+	if isPrint {
+		gflogger.HandleErrorLog(req, 1, req.GetError())
+	} else {
+		req.SetError(nil)
+	}
 	// 返回
 	gfresp.Response{
 		Code:    rCode.Code(),

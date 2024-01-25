@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 01:06:29
+ * @LastEditTime: 2024-01-26 01:32:54
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -112,29 +112,29 @@ func Unauthorized(msg string, data any) (resp Response) {
 
 // RespFail 返回失败
 func RespFail(req *ghttp.Request, err error, data ...any) {
-	gflogger.HandleErrorLog(req, "RespFail Error: ", err)
-	rCode, _ := gferror.HandleError(err)
+	rCode, unwrapErr := gferror.HandlerError(err)
+	gflogger.HandleErrorLog(req, 2, unwrapErr)
 	Fail(rCode.Code(), rCode.Message(), data...).Resp(req)
 }
 
 // RespFailCtx 返回失败
 func RespFailCtx(ctx context.Context, err error, data ...any) {
-	gflogger.HandleErrorLog(g.RequestFromCtx(ctx), "RespFailCtx Error: ", err)
-	rCode, _ := gferror.HandleError(err)
+	rCode, unwrapErr := gferror.HandlerError(err)
+	gflogger.HandleErrorLog(g.RequestFromCtx(ctx), 2, unwrapErr)
 	Fail(rCode.Code(), rCode.Message(), data...).RespCtx(ctx)
 }
 
 // RespFailExit 返回失败并退出
 func RespFailExit(req *ghttp.Request, err error, data ...any) {
-	gflogger.HandleErrorLog(req, "RespFailExit Error: ", err)
-	rCode, _ := gferror.HandleError(err)
+	rCode, unwrapErr := gferror.HandlerError(err)
+	gflogger.HandleErrorLog(req, 2, unwrapErr)
 	Fail(rCode.Code(), rCode.Message(), data...).RespExit(req)
 }
 
 // RespFailCtxExit 返回失败并退出
 func RespFailCtxExit(ctx context.Context, err error, data ...any) {
-	gflogger.HandleErrorLog(g.RequestFromCtx(ctx), "RespFailCtxExit Error: ", err)
-	rCode, _ := gferror.HandleError(err)
+	rCode, unwrapErr := gferror.HandlerError(err)
+	gflogger.HandleErrorLog(g.RequestFromCtx(ctx), 2, unwrapErr)
 	Fail(rCode.Code(), rCode.Message(), data...).RespCtxExit(ctx)
 }
 
