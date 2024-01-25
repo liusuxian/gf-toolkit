@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 20:59:43
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 01:17:16
+ * @LastEditTime: 2024-01-26 02:01:31
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -16,6 +16,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/glog"
+	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/text/gstr"
 )
 
@@ -126,7 +127,7 @@ func HandleAccessLog(req *ghttp.Request, skip int) {
 	content := fmt.Sprintf(
 		`%d "%s %s %s %s %s" %.3f, %s, "%s", "%s"`,
 		req.Response.Status, req.Method, scheme, req.Host, req.URL.String(), req.Proto,
-		float64(req.LeaveTime-req.EnterTime)/1000,
+		float64(gtime.TimestampMilli()-req.EnterTime)/1000,
 		req.GetClientIp(), req.Referer(), req.UserAgent(),
 	)
 	logger.Debug(req.Context(), content)
@@ -160,7 +161,7 @@ func HandleErrorLog(req *ghttp.Request, skip int, err error) {
 	content := fmt.Sprintf(
 		`%d "%s %s %s %s %s" %.3f, %s, "%s", "%s", %d, "%s", "%+v"`,
 		req.Response.Status, req.Method, scheme, req.Host, req.URL.String(), req.Proto,
-		float64(req.LeaveTime-req.EnterTime)/1000,
+		float64(gtime.TimestampMilli()-req.EnterTime)/1000,
 		req.GetClientIp(), req.Referer(), req.UserAgent(),
 		rCode.Code(), rCode.Message(), codeDetailStr,
 	)
