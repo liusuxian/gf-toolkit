@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-25 21:13:48
+ * @LastEditTime: 2024-01-26 01:06:29
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -112,49 +112,29 @@ func Unauthorized(msg string, data any) (resp Response) {
 
 // RespFail 返回失败
 func RespFail(req *ghttp.Request, err error, data ...any) {
-	var (
-		rCode     gcode.Code
-		unwrapErr error
-	)
-	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
-		gflogger.Errorf(req.GetCtx(), "RespFail Error: %v", unwrapErr)
-	}
+	gflogger.HandleErrorLog(req, "RespFail Error: ", err)
+	rCode, _ := gferror.HandleError(err)
 	Fail(rCode.Code(), rCode.Message(), data...).Resp(req)
 }
 
 // RespFailCtx 返回失败
 func RespFailCtx(ctx context.Context, err error, data ...any) {
-	var (
-		rCode     gcode.Code
-		unwrapErr error
-	)
-	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
-		gflogger.Errorf(ctx, "RespFailCtx Error: %v", unwrapErr)
-	}
+	gflogger.HandleErrorLog(g.RequestFromCtx(ctx), "RespFailCtx Error: ", err)
+	rCode, _ := gferror.HandleError(err)
 	Fail(rCode.Code(), rCode.Message(), data...).RespCtx(ctx)
 }
 
 // RespFailExit 返回失败并退出
 func RespFailExit(req *ghttp.Request, err error, data ...any) {
-	var (
-		rCode     gcode.Code
-		unwrapErr error
-	)
-	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
-		gflogger.Errorf(req.GetCtx(), "RespFailExit Error: %v", unwrapErr)
-	}
+	gflogger.HandleErrorLog(req, "RespFailExit Error: ", err)
+	rCode, _ := gferror.HandleError(err)
 	Fail(rCode.Code(), rCode.Message(), data...).RespExit(req)
 }
 
 // RespFailCtxExit 返回失败并退出
 func RespFailCtxExit(ctx context.Context, err error, data ...any) {
-	var (
-		rCode     gcode.Code
-		unwrapErr error
-	)
-	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
-		gflogger.Errorf(ctx, "RespFailCtxExit Error: %v", unwrapErr)
-	}
+	gflogger.HandleErrorLog(g.RequestFromCtx(ctx), "RespFailCtxExit Error: ", err)
+	rCode, _ := gferror.HandleError(err)
 	Fail(rCode.Code(), rCode.Message(), data...).RespCtxExit(ctx)
 }
 
