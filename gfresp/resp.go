@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-25 16:33:05
+ * @LastEditTime: 2024-01-25 20:38:36
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -14,10 +14,11 @@ import (
 	"encoding/json"
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/liusuxian/gf-toolkit/gferror"
+	"github.com/liusuxian/gf-toolkit/gflogger"
 	"net/http"
 )
 
@@ -81,15 +82,13 @@ func (resp Response) RespCtx(ctx context.Context) {
 
 // RespExit 响应数据返回并退出
 func (resp Response) RespExit(req *ghttp.Request) {
-	req.Response.WriteJson(resp)
-	req.Exit()
+	req.Response.WriteJsonExit(resp)
 }
 
 // RespCtxExit 响应数据返回并退出
 func (resp Response) RespCtxExit(ctx context.Context) {
 	req := g.RequestFromCtx(ctx)
-	req.Response.WriteJson(resp)
-	req.Exit()
+	req.Response.WriteJsonExit(resp)
 }
 
 // Succ 成功
@@ -113,25 +112,49 @@ func Unauthorized(msg string, data any) (resp Response) {
 
 // RespFail 返回失败
 func RespFail(req *ghttp.Request, err error, data ...any) {
-	rCode := gerror.Code(err)
+	var (
+		rCode     gcode.Code
+		unwrapErr error
+	)
+	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
+		gflogger.Errorf(req.GetCtx(), "RespFail Error: %v", unwrapErr)
+	}
 	Fail(rCode.Code(), rCode.Message(), data...).Resp(req)
 }
 
 // RespFailCtx 返回失败
 func RespFailCtx(ctx context.Context, err error, data ...any) {
-	rCode := gerror.Code(err)
+	var (
+		rCode     gcode.Code
+		unwrapErr error
+	)
+	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
+		gflogger.Errorf(ctx, "RespFailCtx Error: %v", unwrapErr)
+	}
 	Fail(rCode.Code(), rCode.Message(), data...).RespCtx(ctx)
 }
 
 // RespFailExit 返回失败并退出
 func RespFailExit(req *ghttp.Request, err error, data ...any) {
-	rCode := gerror.Code(err)
+	var (
+		rCode     gcode.Code
+		unwrapErr error
+	)
+	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
+		gflogger.Errorf(req.GetCtx(), "RespFailExit Error: %v", unwrapErr)
+	}
 	Fail(rCode.Code(), rCode.Message(), data...).RespExit(req)
 }
 
 // RespFailCtxExit 返回失败并退出
 func RespFailCtxExit(ctx context.Context, err error, data ...any) {
-	rCode := gerror.Code(err)
+	var (
+		rCode     gcode.Code
+		unwrapErr error
+	)
+	if rCode, unwrapErr = gferror.HandleError(err); unwrapErr != nil {
+		gflogger.Errorf(ctx, "RespFailCtxExit Error: %v", unwrapErr)
+	}
 	Fail(rCode.Code(), rCode.Message(), data...).RespCtxExit(ctx)
 }
 
