@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-20 15:38:07
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-24 23:14:37
+ * @LastEditTime: 2024-01-27 00:09:38
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -35,7 +35,7 @@ func (m *Token) setCache(ctx context.Context, cacheKey string, userCache g.Map) 
 			gflogger.Error(ctx, "[gftoken]cache json encode error", err1)
 			return gfresp.Fail(ERROR, "cache json encode error")
 		}
-		_, err := g.Redis(m.RedisGroupName).Do(ctx, "SETEX", cacheKey, m.Timeout/1000, cacheValueJson)
+		_, err := m.RedisCache.Do(ctx, "SETEX", cacheKey, m.Timeout/1000, cacheValueJson)
 		if err != nil {
 			gflogger.Error(ctx, "[gftoken]cache set error", err)
 			return gfresp.Fail(ERROR, "cache set error")
@@ -62,7 +62,7 @@ func (m *Token) getCache(ctx context.Context, cacheKey string) gfresp.Response {
 		}
 		userCache = gconv.Map(userCacheValue)
 	case CacheModeRedis:
-		userCacheJson, err := g.Redis(m.RedisGroupName).Do(ctx, "GET", cacheKey)
+		userCacheJson, err := m.RedisCache.Do(ctx, "GET", cacheKey)
 		if err != nil {
 			gflogger.Error(ctx, "[gftoken]cache get error", err)
 			return gfresp.Fail(ERROR, "cache get error")
@@ -96,7 +96,7 @@ func (m *Token) removeCache(ctx context.Context, cacheKey string) gfresp.Respons
 		}
 	case CacheModeRedis:
 		var err error
-		_, err = g.Redis(m.RedisGroupName).Do(ctx, "DEL", cacheKey)
+		_, err = m.RedisCache.Do(ctx, "DEL", cacheKey)
 		if err != nil {
 			gflogger.Error(ctx, "[gftoken]cache remove error", err)
 			return gfresp.Fail(ERROR, "cache remove error")

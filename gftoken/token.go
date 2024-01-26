@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-20 15:38:07
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 22:31:20
+ * @LastEditTime: 2024-01-27 00:06:17
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"github.com/gogf/gf/v2/crypto/gaes"
 	"github.com/gogf/gf/v2/crypto/gmd5"
-	"github.com/gogf/gf/v2/database/gredis"
 	"github.com/gogf/gf/v2/encoding/gbase64"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -23,6 +22,7 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gogf/gf/v2/util/grand"
 	"github.com/liusuxian/gf-toolkit/gflogger"
+	"github.com/liusuxian/gf-toolkit/gfredis"
 	"github.com/liusuxian/gf-toolkit/gfresp"
 	"net/http"
 	"strings"
@@ -30,12 +30,12 @@ import (
 
 // Token token 结构体
 type Token struct {
-	// 缓存模式 1:gcache 2:gredis 3:fileCache 默认1
+	// 缓存模式 1:gcache 2:redis 3:fileCache 默认1
 	CacheMode int8
-	// gredis 组名称
-	RedisGroupName string
 	// 缓存 key
 	CacheKey string
+	// redis 缓存客户端（缓存模式为 2 时必填）
+	RedisCache *gfredis.RedisClient
 	// 超时时间 默认10天（毫秒）
 	Timeout int
 	// 缓存刷新时间 默认为超时时间的一半（毫秒）
@@ -355,10 +355,6 @@ func (m *Token) InitConfig() {
 		m.CacheMode = CacheModeCache
 	}
 
-	if m.RedisGroupName == "" {
-		m.RedisGroupName = gredis.DefaultGroupName
-	}
-
 	if m.CacheKey == "" {
 		m.CacheKey = DefaultCacheKey
 	}
@@ -423,9 +419,8 @@ func (m *Token) InitConfig() {
 // String
 func (m *Token) String() string {
 	return gconv.String(g.Map{
-		// 缓存模式 1:gcache 2:gredis 3:fileCache 默认1
+		// 缓存模式 1:gcache 2:redis 3:fileCache 默认1
 		"CacheMode":        m.CacheMode,
-		"RedisGroupName":   m.RedisGroupName,
 		"CacheKey":         m.CacheKey,
 		"Timeout":          m.Timeout,
 		"TokenDelimiter":   m.TokenDelimiter,

@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-23 23:38:09
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-24 23:15:01
+ * @LastEditTime: 2024-01-27 00:07:29
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -27,6 +27,10 @@ func (m *Token) GroupMiddleware(ctx context.Context, group *ghttp.RouterGroup) {
 	if m.CacheMode > CacheModeFile {
 		gflogger.Panic(ctx, "[gftoken]CacheMode set error")
 	}
+	// 检查 redis 缓存
+	if m.CacheMode == 2 && m.RedisCache == nil {
+		gflogger.Panic(ctx, "[gftoken]RedisCache is nil")
+	}
 	// 初始化文件缓存
 	if m.CacheMode == 3 {
 		m.initFileCache(ctx)
@@ -44,6 +48,10 @@ func (m *Token) BindMiddleware(ctx context.Context, s *ghttp.Server) {
 	// 缓存模式
 	if m.CacheMode > CacheModeFile {
 		gflogger.Panic(ctx, "[gftoken]CacheMode set error")
+	}
+	// 检查 redis 缓存
+	if m.CacheMode == 2 && m.RedisCache == nil {
+		gflogger.Panic(ctx, "[gftoken]RedisCache is nil")
 	}
 	// 初始化文件缓存
 	if m.CacheMode == 3 {
@@ -68,6 +76,10 @@ func (m *Token) GlobalMiddleware(ctx context.Context, s *ghttp.Server) {
 	// 缓存模式
 	if m.CacheMode > CacheModeFile {
 		gflogger.Panic(ctx, "[gftoken]CacheMode set error")
+	}
+	// 检查 redis 缓存
+	if m.CacheMode == 2 && m.RedisCache == nil {
+		gflogger.Panic(ctx, "[gftoken]RedisCache is nil")
 	}
 	// 初始化文件缓存
 	if m.CacheMode == 3 {

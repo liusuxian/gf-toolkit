@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 22:29:06
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-24 23:15:44
+ * @LastEditTime: 2024-01-27 00:01:10
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -16,7 +16,7 @@ import (
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/liusuxian/gf-toolkit/gfcache"
+	"github.com/liusuxian/gf-toolkit/gfredis"
 	"net/url"
 	"time"
 )
@@ -28,17 +28,17 @@ const (
 
 // WeChatService 微信服务
 type WeChatService struct {
-	appid        string               // appid
-	secret       string               // 密钥
-	cacheAdapter gfcache.CacheAdapter // 缓存适配器
+	appid  string               // appid
+	secret string               // 密钥
+	cache  *gfredis.RedisClient // redis 缓存客户端
 }
 
 // NewWeChatService 创建微信服务
-func NewWeChatService(appid, secret string, adapter gfcache.CacheAdapter) (s *WeChatService) {
+func NewWeChatService(appid, secret string, cache *gfredis.RedisClient) (s *WeChatService) {
 	return &WeChatService{
-		appid:        appid,
-		secret:       secret,
-		cacheAdapter: adapter,
+		appid:  appid,
+		secret: secret,
+		cache:  cache,
 	}
 }
 
@@ -71,9 +71,9 @@ func (s *WeChatService) GetStableAccessToken(ctx context.Context, forceRefresh .
 	}
 	// 非强制刷新，读取缓存
 	cacheKey := fmt.Sprintf(KeyWeChatAccesstoken, s.appid)
-	if !newForceRefresh && s.cacheAdapter != nil {
+	if !newForceRefresh && s.cache != nil {
 		var val *gvar.Var
-		if val, err = s.cacheAdapter.Get(ctx, cacheKey); err != nil {
+		if val, err = s.cache.Do(ctx, "GET", cacheKey); err != nil {
 			return
 		}
 		if !val.IsNil() && val.String() != "" {
@@ -102,9 +102,9 @@ func (s *WeChatService) GetStableAccessToken(ctx context.Context, forceRefresh .
 	}
 	// 缓存写入
 	accessToken = gconv.String(resMap["access_token"])
-	if s.cacheAdapter != nil {
+	if s.cache != nil {
 		expiresIn := gconv.Int(resMap["expires_in"])
-		err = s.cacheAdapter.Set(ctx, cacheKey, accessToken, time.Second*time.Duration(expiresIn-10))
+		_, err = s.cache.Do(ctx, "SETEX", cacheKey, time.Second*time.Duration(expiresIn-10), accessToken)
 	}
 	return
 }

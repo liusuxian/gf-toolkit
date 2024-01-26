@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 22:53:35
+ * @LastEditTime: 2024-01-26 23:43:25
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -109,7 +109,11 @@ func ResFailPrintErr(req *ghttp.Request, err error, data ...any) {
 
 // ResFailPrintErrExit 返回失败并退出，默认打印错误日志
 func ResFailPrintErrExit(req *ghttp.Request, err error, data ...any) {
-	ResFailPrintErr(req, err, data...)
+	rCode := gerror.Code(err)
+	req.Response.WriteJson(Fail(rCode.Code(), rCode.Message(), data...))
+	req.SetError(err)
+	gflogger.HandlerErrorLog(req, 2)
+	req.SetError(nil)
 	req.Exit()
 }
 
