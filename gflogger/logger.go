@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 20:59:43
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 02:01:31
+ * @LastEditTime: 2024-01-26 21:54:35
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -20,103 +20,98 @@ import (
 	"github.com/gogf/gf/v2/text/gstr"
 )
 
-// Log 获取log对象
-func Log(skip int, name ...string) *glog.Logger {
+// Log 获取 log 对象
+func Log(name ...string) (logger *glog.Logger) {
 	if len(name) > 0 && name[0] != "" {
-		return g.Log(name[0]).Skip(skip).Line()
+		return g.Log(name[0]).Line()
 	}
-	return g.Log().Skip(skip).Line()
+	return g.Log().Line()
+}
+
+// AccessLog 获取 access log 对象
+func AccessLog() (logger *glog.Logger) {
+	return Log("access")
+}
+
+// ErrorLog 获取 error log 对象
+func ErrorLog() (logger *glog.Logger) {
+	return Log("error")
 }
 
 func Print(ctx context.Context, v ...any) {
-	defaultLog("access").Print(ctx, v...)
+	AccessLog().Stack(false, 1).Print(ctx, v...)
 }
 
 func Printf(ctx context.Context, format string, v ...any) {
-	defaultLog("access").Printf(ctx, format, v...)
+	AccessLog().Stack(false, 1).Printf(ctx, format, v...)
 }
 
 func Info(ctx context.Context, v ...any) {
-	defaultLog("access").Info(ctx, v...)
+	AccessLog().Stack(false, 1).Info(ctx, v...)
 }
 
 func Infof(ctx context.Context, format string, v ...any) {
-	defaultLog("access").Infof(ctx, format, v...)
+	AccessLog().Stack(false, 1).Infof(ctx, format, v...)
 }
 
 func Debug(ctx context.Context, v ...any) {
-	defaultLog("access").Debug(ctx, v...)
+	AccessLog().Stack(false, 1).Debug(ctx, v...)
 }
 
 func Debugf(ctx context.Context, format string, v ...any) {
-	defaultLog("access").Debugf(ctx, format, v...)
+	AccessLog().Stack(false, 1).Debugf(ctx, format, v...)
 }
 
 func Notice(ctx context.Context, v ...any) {
-	defaultLog("access").Notice(ctx, v...)
+	AccessLog().Stack(false, 1).Notice(ctx, v...)
 }
 
 func Noticef(ctx context.Context, format string, v ...any) {
-	defaultLog("access").Noticef(ctx, format, v...)
+	AccessLog().Stack(false, 1).Noticef(ctx, format, v...)
 }
 
 func Warning(ctx context.Context, v ...any) {
-	defaultLog("error").Warning(ctx, v...)
+	ErrorLog().Stack(false, 1).Warning(ctx, v...)
 }
 
 func Warningf(ctx context.Context, format string, v ...any) {
-	defaultLog("error").Warningf(ctx, format, v...)
+	ErrorLog().Stack(false, 1).Warningf(ctx, format, v...)
 }
 
 func Error(ctx context.Context, v ...any) {
-	defaultLog("error").Error(ctx, v...)
+	ErrorLog().Stack(false, 1).Error(ctx, v...)
 }
 
 func Errorf(ctx context.Context, format string, v ...any) {
-	defaultLog("error").Errorf(ctx, format, v...)
+	ErrorLog().Stack(false, 1).Errorf(ctx, format, v...)
 }
 
 func Fatal(ctx context.Context, v ...any) {
-	defaultLog("error").Fatal(ctx, v...)
+	ErrorLog().Stack(false, 1).Fatal(ctx, v...)
 }
 
 func Fatalf(ctx context.Context, format string, v ...any) {
-	defaultLog("error").Fatalf(ctx, format, v...)
+	ErrorLog().Stack(false, 1).Fatalf(ctx, format, v...)
 }
 
 func Critical(ctx context.Context, v ...any) {
-	defaultLog("error").Critical(ctx, v...)
+	ErrorLog().Stack(false, 1).Critical(ctx, v...)
 }
 
 func Criticalf(ctx context.Context, format string, v ...any) {
-	defaultLog("error").Criticalf(ctx, format, v...)
+	ErrorLog().Stack(false, 1).Criticalf(ctx, format, v...)
 }
 
 func Panic(ctx context.Context, v ...any) {
-	defaultLog("error").Panic(ctx, v...)
+	ErrorLog().Stack(false, 1).Panic(ctx, v...)
 }
 
 func Panicf(ctx context.Context, format string, v ...any) {
-	defaultLog("error").Panicf(ctx, format, v...)
+	ErrorLog().Stack(false, 1).Panicf(ctx, format, v...)
 }
 
-// defaultLog 默认log对象
-func defaultLog(name ...string) (logger *glog.Logger) {
-	logger = Log(1, name...)
-	if logger == nil {
-		return
-	}
-	logger.SetStack(false)
-	return
-}
-
-// HandleAccessLog
-func HandleAccessLog(req *ghttp.Request, skip int) {
-	logger := Log(skip, "access")
-	if logger == nil {
-		return
-	}
-
+// HandlerAccessLog
+func HandlerAccessLog(req *ghttp.Request, skip ...int) {
 	var (
 		scheme = "http"
 		proto  = req.Header.Get("X-Forwarded-Proto")
@@ -130,20 +125,15 @@ func HandleAccessLog(req *ghttp.Request, skip int) {
 		float64(gtime.TimestampMilli()-req.EnterTime)/1000,
 		req.GetClientIp(), req.Referer(), req.UserAgent(),
 	)
-	logger.Debug(req.Context(), content)
+	AccessLog().Stack(false, skip...).Debug(req.Context(), content)
 }
 
-// HandleErrorLog
-func HandleErrorLog(req *ghttp.Request, skip int, err error) {
-	if err == nil {
+// HandlerErrorLog
+func HandlerErrorLog(req *ghttp.Request, skip ...int) {
+	var err error
+	if err = req.GetError(); err == nil {
 		return
 	}
-
-	logger := Log(skip, "error")
-	if logger == nil {
-		return
-	}
-	logger.SetStack(false)
 
 	var (
 		rCode         = gerror.Code(err)
@@ -170,6 +160,5 @@ func HandleErrorLog(req *ghttp.Request, skip int, err error) {
 	} else {
 		content += ", " + err.Error()
 	}
-	req.SetError(nil)
-	logger.Error(req.Context(), content)
+	ErrorLog().Stack(false, skip...).Error(req.Context(), content)
 }

@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 01:32:54
+ * @LastEditTime: 2024-01-26 22:53:35
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -10,14 +10,12 @@
 package gfresp
 
 import (
-	"context"
 	"encoding/json"
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/liusuxian/gf-toolkit/gferror"
 	"github.com/liusuxian/gf-toolkit/gflogger"
 	"net/http"
 )
@@ -69,28 +67,6 @@ func (resp Response) Json() (str string) {
 	return string(b)
 }
 
-// Resp 响应数据返回
-func (resp Response) Resp(req *ghttp.Request) {
-	req.Response.WriteJson(resp)
-}
-
-// RespCtx 响应数据返回
-func (resp Response) RespCtx(ctx context.Context) {
-	req := g.RequestFromCtx(ctx)
-	req.Response.WriteJson(resp)
-}
-
-// RespExit 响应数据返回并退出
-func (resp Response) RespExit(req *ghttp.Request) {
-	req.Response.WriteJsonExit(resp)
-}
-
-// RespCtxExit 响应数据返回并退出
-func (resp Response) RespCtxExit(ctx context.Context) {
-	req := g.RequestFromCtx(ctx)
-	req.Response.WriteJsonExit(resp)
-}
-
 // Succ 成功
 func Succ(data any) (resp Response) {
 	return Response{Code: gcode.CodeOK.Code(), Message: gcode.CodeOK.Message(), Data: data}
@@ -110,52 +86,41 @@ func Unauthorized(msg string, data any) (resp Response) {
 	return Response{Code: http.StatusUnauthorized, Message: msg, Data: data}
 }
 
-// RespFail 返回失败
-func RespFail(req *ghttp.Request, err error, data ...any) {
-	rCode, unwrapErr := gferror.HandlerError(err)
-	gflogger.HandleErrorLog(req, 2, unwrapErr)
-	Fail(rCode.Code(), rCode.Message(), data...).Resp(req)
+// ResFail 返回失败
+func ResFail(req *ghttp.Request, err error, data ...any) {
+	rCode := gerror.Code(err)
+	req.Response.WriteJson(Fail(rCode.Code(), rCode.Message(), data...))
 }
 
-// RespFailCtx 返回失败
-func RespFailCtx(ctx context.Context, err error, data ...any) {
-	rCode, unwrapErr := gferror.HandlerError(err)
-	gflogger.HandleErrorLog(g.RequestFromCtx(ctx), 2, unwrapErr)
-	Fail(rCode.Code(), rCode.Message(), data...).RespCtx(ctx)
+// ResFailExit 返回失败并退出
+func ResFailExit(req *ghttp.Request, err error, data ...any) {
+	rCode := gerror.Code(err)
+	req.Response.WriteJsonExit(Fail(rCode.Code(), rCode.Message(), data...))
 }
 
-// RespFailExit 返回失败并退出
-func RespFailExit(req *ghttp.Request, err error, data ...any) {
-	rCode, unwrapErr := gferror.HandlerError(err)
-	gflogger.HandleErrorLog(req, 2, unwrapErr)
-	Fail(rCode.Code(), rCode.Message(), data...).RespExit(req)
+// ResFailPrintErr 返回失败，默认打印错误日志
+func ResFailPrintErr(req *ghttp.Request, err error, data ...any) {
+	rCode := gerror.Code(err)
+	req.Response.WriteJson(Fail(rCode.Code(), rCode.Message(), data...))
+	req.SetError(err)
+	gflogger.HandlerErrorLog(req, 2)
+	req.SetError(nil)
 }
 
-// RespFailCtxExit 返回失败并退出
-func RespFailCtxExit(ctx context.Context, err error, data ...any) {
-	rCode, unwrapErr := gferror.HandlerError(err)
-	gflogger.HandleErrorLog(g.RequestFromCtx(ctx), 2, unwrapErr)
-	Fail(rCode.Code(), rCode.Message(), data...).RespCtxExit(ctx)
+// ResFailPrintErrExit 返回失败并退出，默认打印错误日志
+func ResFailPrintErrExit(req *ghttp.Request, err error, data ...any) {
+	ResFailPrintErr(req, err, data...)
+	req.Exit()
 }
 
 // RespSucc 返回成功
 func RespSucc(req *ghttp.Request, data any) {
-	Succ(data).Resp(req)
-}
-
-// RespSuccCtx 返回成功
-func RespSuccCtx(ctx context.Context, data any) {
-	Succ(data).RespCtx(ctx)
+	req.Response.WriteJson(Succ(data))
 }
 
 // RespSuccExit 返回成功并退出
 func RespSuccExit(req *ghttp.Request, data any) {
-	Succ(data).RespExit(req)
-}
-
-// RespSuccCtxExit 返回成功并退出
-func RespSuccCtxExit(ctx context.Context, data any) {
-	Succ(data).RespCtxExit(ctx)
+	req.Response.WriteJsonExit(Succ(data))
 }
 
 // Redirect 重定向

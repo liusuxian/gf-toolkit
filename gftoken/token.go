@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-20 15:38:07
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-24 23:43:47
+ * @LastEditTime: 2024-01-26 22:31:20
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -413,7 +413,7 @@ func (m *Token) InitConfig() {
 				gflogger.Warning(r.Context(), fmt.Sprintf("[AUTH_%s][url:%s][params:%s][data:%s]",
 					no, r.URL.Path, params, respData.Json()))
 				respData.Message = m.AuthFailMsg
-				respData.Resp(r)
+				r.Response.WriteJson(respData)
 				r.ExitAll()
 			}
 		}

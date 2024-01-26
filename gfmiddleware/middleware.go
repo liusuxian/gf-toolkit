@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:15:17
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 01:33:40
+ * @LastEditTime: 2024-01-26 22:30:52
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -62,16 +62,16 @@ func doHandlerResponse(req *ghttp.Request, isPrint bool) {
 			rCode = gcode.CodeOK
 		}
 	}
-	// 是否打印错误
-	if isPrint {
-		gflogger.HandleErrorLog(req, 1, req.GetError())
-	} else {
-		req.SetError(nil)
-	}
 	// 返回
-	gfresp.Response{
+	req.Response.WriteJson(gfresp.Response{
 		Code:    rCode.Code(),
 		Message: rCode.Message(),
 		Data:    res,
-	}.Resp(req)
+	})
+	// 是否打印错误
+	if isPrint {
+		gflogger.HandlerErrorLog(req, 1)
+	}
+	// 防止 GoFrame 框架自动打印错误日志
+	req.SetError(nil)
 }
