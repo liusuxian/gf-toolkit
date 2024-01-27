@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:51:32
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-24 23:14:26
+ * @LastEditTime: 2024-01-27 16:38:08
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -13,6 +13,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/alicebob/miniredis/v2"
+	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/liusuxian/gf-toolkit/gfredis"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -134,4 +135,44 @@ func TestRedis(t *testing.T) {
 	if assert.NoError(err) {
 		assert.Equal(1, actualObj.Int())
 	}
+}
+
+func TestRedisLuaScript(t *testing.T) {
+	r := miniredis.RunT(t)
+	client := gfredis.NewClient(func(cc *gfredis.ClientConfig) {
+		cc.Addr = r.Addr()
+		cc.Password = ""
+		cc.DB = 1
+	})
+	defer client.Close()
+
+	var (
+		err    error
+		val    *gvar.Var
+		ctx    = context.Background()
+		assert = assert.New(t)
+	)
+	err = client.ScriptLoad(ctx, "lua_script/test_get.lua")
+	assert.NoError(err)
+	val, err = client.Do(ctx, "SADD", "test_get1", 100, 200, 300)
+	assert.NoError(err)
+	assert.Equal(3, val.Int())
+	val, err = client.EvalSha(ctx, "test_get", []string{"test_get1"})
+	assert.Error(err)
+	assert.True(val.IsNil())
+	val, err = client.Do(ctx, "SET", "test_get2", 100)
+	assert.NoError(err)
+	assert.Equal("OK", val.String())
+	val, err = client.EvalSha(ctx, "test_get", []string{"test_get2", "test_get2"})
+	assert.NoError(err)
+	assert.Equal(3, val.Int())
+	val, err = client.EvalSha(ctx, "test_get", []string{"test_get2", "test_get3"})
+	assert.NoError(err)
+	assert.Equal(2, val.Int())
+
+	err = client.ScriptLoad(ctx, "lua_script/test_set.lua")
+	assert.NoError(err)
+	val, err = client.EvalSha(ctx, "test_set", []string{"test_set1"}, 100)
+	assert.NoError(err)
+	assert.Equal(1, val.Int())
 }
