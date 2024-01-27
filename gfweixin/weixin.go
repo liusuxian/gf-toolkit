@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 22:29:06
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-27 00:01:10
+ * @LastEditTime: 2024-01-27 15:05:31
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -18,7 +18,6 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/liusuxian/gf-toolkit/gfredis"
 	"net/url"
-	"time"
 )
 
 const (
@@ -104,7 +103,7 @@ func (s *WeChatService) GetStableAccessToken(ctx context.Context, forceRefresh .
 	accessToken = gconv.String(resMap["access_token"])
 	if s.cache != nil {
 		expiresIn := gconv.Int(resMap["expires_in"])
-		_, err = s.cache.Do(ctx, "SETEX", cacheKey, time.Second*time.Duration(expiresIn-10), accessToken)
+		_, err = s.cache.Do(ctx, "SETEX", cacheKey, expiresIn-10, accessToken)
 	}
 	return
 }

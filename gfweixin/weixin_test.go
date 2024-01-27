@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 22:29:06
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-24 23:15:36
+ * @LastEditTime: 2024-01-27 15:06:58
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -11,62 +11,89 @@ package gfweixin_test
 
 import (
 	"context"
+	"github.com/alicebob/miniredis/v2"
+	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/liusuxian/gf-toolkit/gfredis"
 	"github.com/liusuxian/gf-toolkit/gfweixin"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestAuthCode2Session(t *testing.T) {
-	weChatService := gfweixin.NewWeChatService("wx65064684d6c0f73f", "e20bf5f51062ab55ed2b1cec8e540502", nil)
-	ctx := context.Background()
+	r := miniredis.RunT(t)
+	client := gfredis.NewClient(func(cc *gfredis.ClientConfig) {
+		cc.Addr = r.Addr()
+		cc.Password = ""
+		cc.DB = 1
+	})
+	defer client.Close()
+
+	weChatService := gfweixin.NewWeChatService("wx65064684d6c0f73f", "e20bf5f51062ab55ed2b1cec8e540502", client)
 	var (
+		ctx    = context.Background()
+		assert = assert.New(t)
 		resMap map[string]any
 		err    error
 	)
-	if resMap, err = weChatService.AuthCode2Session(ctx, "0d3AYx000aRfrR17go400dpCcR2AYx0c"); err != nil {
-		t.Logf("AuthCode2Session err: %+v\n", err)
-		return
+	resMap, err = weChatService.AuthCode2Session(ctx, "0d3AYx000aRfrR17go400dpCcR2AYx0c")
+	if assert.Error(err) {
+		assert.Equal(40029, gconv.Int(resMap["errcode"]))
 	}
-	t.Logf("resMap: %+v\n", resMap)
 }
 
 func TestGetStableAccessToken(t *testing.T) {
-	weChatService := gfweixin.NewWeChatService("wx65064684d6c0f73f", "e20bf5f51062ab55ed2b1cec8e540502", nil)
-	ctx := context.Background()
+	r := miniredis.RunT(t)
+	client := gfredis.NewClient(func(cc *gfredis.ClientConfig) {
+		cc.Addr = r.Addr()
+		cc.Password = ""
+		cc.DB = 1
+	})
+	defer client.Close()
+
+	weChatService := gfweixin.NewWeChatService("wx65064684d6c0f73f", "e20bf5f51062ab55ed2b1cec8e540502", client)
 	var (
+		ctx         = context.Background()
+		assert      = assert.New(t)
 		accessToken string
 		err         error
 	)
-	if accessToken, err = weChatService.GetStableAccessToken(ctx); err != nil {
-		t.Logf("GetStableAccessToken err: %+v\n", err)
-		return
+	accessToken, err = weChatService.GetStableAccessToken(ctx)
+	if assert.NoError(err) {
+		assert.NotEmpty(accessToken)
 	}
-	t.Logf("accessToken: %v\n", accessToken)
-	if accessToken, err = weChatService.GetStableAccessToken(ctx, true); err != nil {
-		t.Logf("GetStableAccessToken err: %+v\n", err)
-		return
+	accessToken, err = weChatService.GetStableAccessToken(ctx, true)
+	if assert.NoError(err) {
+		assert.NotEmpty(accessToken)
 	}
-	t.Logf("accessToken: %v\n", accessToken)
 }
 
 func TestGetPhoneNumber(t *testing.T) {
-	weChatService := gfweixin.NewWeChatService("wx65064684d6c0f73f", "e20bf5f51062ab55ed2b1cec8e540502", nil)
-	ctx := context.Background()
+	r := miniredis.RunT(t)
+	client := gfredis.NewClient(func(cc *gfredis.ClientConfig) {
+		cc.Addr = r.Addr()
+		cc.Password = ""
+		cc.DB = 1
+	})
+	defer client.Close()
+
+	weChatService := gfweixin.NewWeChatService("wx65064684d6c0f73f", "e20bf5f51062ab55ed2b1cec8e540502", client)
 	var (
+		ctx         = context.Background()
+		assert      = assert.New(t)
 		accessToken string
 		err         error
 	)
-	if accessToken, err = weChatService.GetStableAccessToken(ctx); err != nil {
-		t.Logf("GetStableAccessToken err: %+v\n", err)
-		return
+	accessToken, err = weChatService.GetStableAccessToken(ctx)
+	if assert.NoError(err) {
+		assert.NotEmpty(accessToken)
 	}
 	var (
 		phoneNumber        string
 		invalidAccessToken bool
 	)
-	if phoneNumber, invalidAccessToken, err = weChatService.GetPhoneNumber(ctx, "", accessToken); err != nil {
-		t.Logf("GetPhoneNumber err: %+v\n", err)
-		return
+	phoneNumber, invalidAccessToken, err = weChatService.GetPhoneNumber(ctx, "", accessToken)
+	if assert.Error(err) {
+		assert.False(invalidAccessToken)
+		assert.Empty(phoneNumber)
 	}
-	t.Logf("GetPhoneNumber invalidAccessToken: %v\n", invalidAccessToken)
-	t.Logf("phoneNumber: %+v\n", phoneNumber)
 }
