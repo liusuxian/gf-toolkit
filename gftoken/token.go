@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-20 15:38:07
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-27 00:06:17
+ * @LastEditTime: 2024-01-29 18:05:23
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -22,8 +22,8 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gogf/gf/v2/util/grand"
 	"github.com/liusuxian/gf-toolkit/gflogger"
-	"github.com/liusuxian/gf-toolkit/gfredis"
 	"github.com/liusuxian/gf-toolkit/gfresp"
+	"github.com/liusuxian/go-toolkit/gtkcache"
 	"net/http"
 	"strings"
 )
@@ -34,8 +34,8 @@ type Token struct {
 	CacheMode int8
 	// 缓存 key
 	CacheKey string
-	// redis 缓存客户端（缓存模式为 2 时必填）
-	RedisCache *gfredis.RedisClient
+	// redis 缓存对象（缓存模式为 2 时必填）
+	RedisCache *gtkcache.RedisCache
 	// 超时时间 默认10天（毫秒）
 	Timeout int
 	// 缓存刷新时间 默认为超时时间的一半（毫秒）
