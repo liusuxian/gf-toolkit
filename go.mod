@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/gogf/gf/v2 v2.6.2
-	github.com/liusuxian/go-toolkit v0.0.0-20240131073856-94d1f52d0fd6
+	github.com/liusuxian/go-toolkit v0.0.0-20240131084156-982693c8a015
 	github.com/stretchr/testify v1.8.4
 )
 
