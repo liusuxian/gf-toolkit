@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-15 23:58:32
+ * @LastEditTime: 2024-02-16 00:15:48
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -130,13 +130,21 @@ func RespSuccExit(req *ghttp.Request, data any) {
 }
 
 // ResJsonViaSSE 返回`JSON`流式数据
-func ResJsonViaSSE(req *ghttp.Request, data any) {
+func ResJsonViaSSE(req *ghttp.Request, data ...any) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 将`JSON`字符串作为数据发送
-	fmt.Fprint(req.Response.ResponseWriter, gtkjson.MustJsonMarshal(Succ(data)))
+	var newData any = "EOF"
+	if len(data) > 0 {
+		newData = data[0]
+	}
+	fmt.Fprint(req.Response.ResponseWriter, gtkjson.MustJsonMarshal(Succ(newData)))
 	// 确保即时发送数据
 	req.Response.Flush()
+	// 判断流式数据是否结束
+	if len(data) == 0 {
+		req.Exit()
+	}
 }
 
 // Redirect 重定向
