@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-16 00:37:45
+ * @LastEditTime: 2024-02-16 01:02:16
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -124,13 +124,47 @@ func ResSucc(req *ghttp.Request, data any) {
 	req.Response.WriteJson(Succ(data))
 }
 
-// RespSuccExit 返回成功并退出
-func RespSuccExit(req *ghttp.Request, data any) {
+// ResSuccExit 返回成功并退出
+func ResSuccExit(req *ghttp.Request, data any) {
 	req.Response.WriteJsonExit(Succ(data))
 }
 
-// ResJsonViaSSE 返回`JSON`流式数据
-func ResJsonViaSSE(req *ghttp.Request, data ...any) {
+// ResFailViaSSE 返回流式数据失败
+func ResFailViaSSE(req *ghttp.Request, err error, data ...any) {
+	// 设置`SSE`的`Content-Type`
+	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
+	// 序列化数据为`JSON`字符串
+	rCode := gerror.Code(err)
+	jsonData := gtkjson.MustJsonMarshal(Fail(rCode.Code(), rCode.Message(), data...))
+	// 按`SSE`格式发送数据：'data: <jsonData>\n\n'
+	fmt.Fprintf(req.Response.ResponseWriter, "data: %s\n\n", jsonData)
+	// 确保即时发送数据
+	req.Response.Flush()
+	// 结束请求处理
+	req.Exit()
+}
+
+// ResFailViaSSEPrintErr 返回流式数据失败，默认打印错误日志
+func ResFailViaSSEPrintErr(req *ghttp.Request, err error, data ...any) {
+	// 设置`SSE`的`Content-Type`
+	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
+	// 序列化数据为`JSON`字符串
+	rCode := gerror.Code(err)
+	jsonData := gtkjson.MustJsonMarshal(Fail(rCode.Code(), rCode.Message(), data...))
+	// 按`SSE`格式发送数据：'data: <jsonData>\n\n'
+	fmt.Fprintf(req.Response.ResponseWriter, "data: %s\n\n", jsonData)
+	// 确保即时发送数据
+	req.Response.Flush()
+	// 打印错误日志
+	req.SetError(err)
+	gflogger.HandlerErrorLog(req, 2)
+	req.SetError(nil)
+	// 结束请求处理
+	req.Exit()
+}
+
+// ResSuccViaSSE 返回流式数据成功
+func ResSuccViaSSE(req *ghttp.Request, data ...any) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 准备发送的数据
