@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-16 00:15:48
+ * @LastEditTime: 2024-02-16 00:37:45
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -133,15 +133,20 @@ func RespSuccExit(req *ghttp.Request, data any) {
 func ResJsonViaSSE(req *ghttp.Request, data ...any) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
-	// 将`JSON`字符串作为数据发送
-	var newData any = "EOF"
+	// 准备发送的数据
+	var jsonData string
 	if len(data) > 0 {
-		newData = data[0]
+		// 序列化数据为`JSON`字符串
+		jsonData = gtkjson.MustJsonMarshal(Succ(data[0]))
+	} else {
+		// 如果没有数据，则发送表示结束的消息
+		jsonData = gtkjson.MustJsonMarshal(Succ("EOF"))
 	}
-	fmt.Fprint(req.Response.ResponseWriter, gtkjson.MustJsonMarshal(Succ(newData)))
+	// 按`SSE`格式发送数据：'data: <jsonData>\n\n'
+	fmt.Fprintf(req.Response.ResponseWriter, "data: %s\n\n", jsonData)
 	// 确保即时发送数据
 	req.Response.Flush()
-	// 判断流式数据是否结束
+	// 如果没有数据要发送，结束请求处理
 	if len(data) == 0 {
 		req.Exit()
 	}
