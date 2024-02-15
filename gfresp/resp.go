@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 23:43:25
+ * @LastEditTime: 2024-02-15 23:52:11
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -11,20 +11,22 @@ package gfresp
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/liusuxian/gf-toolkit/gflogger"
+	"github.com/liusuxian/go-toolkit/gtkjson"
 	"net/http"
 )
 
 // Response 通用响应数据结构
 type Response struct {
-	Code    int         `json:"code"    dc:"错误码(0:成功, 非0:错误)"`     // 错误码(0:成功, 非0:错误)
-	Message string      `json:"message" dc:"错误消息"`                 // 错误消息
-	Data    interface{} `json:"data"    dc:"根据 API 定义，对特定请求的结果数据"` // 根据 API 定义，对特定请求的结果数据
+	Code    int    `json:"code"    dc:"错误码(0:成功, 非0:错误)"`   // 错误码(0:成功, 非0:错误)
+	Message string `json:"message" dc:"错误消息"`               // 错误消息
+	Data    any    `json:"data"    dc:"根据API定义，对特定请求的结果数据"` // 根据`API`定义，对特定请求的结果数据
 }
 
 // Success 判断是否成功
@@ -32,27 +34,27 @@ func (resp Response) Success() (ok bool) {
 	return resp.Code == gcode.CodeOK.Code()
 }
 
-// DataString 获取Data转字符串
+// DataString 获取`Data`转字符串
 func (resp Response) DataString() (data string) {
 	return gconv.String(resp.Data)
 }
 
-// DataInt 获取Data转Int
+// DataInt 获取`Data`转`Int`
 func (resp Response) DataInt() (data int) {
 	return gconv.Int(resp.Data)
 }
 
-// GetString 获取Data值转字符串
+// GetString 获取`Data`值转字符串
 func (resp Response) GetString(key string) (data string) {
 	return gconv.String(resp.Get(key))
 }
 
-// GetInt 获取Data值转Int
+// GetInt 获取`Data`值转`Int`
 func (resp Response) GetInt(key string) (data int) {
 	return gconv.Int(resp.Get(key))
 }
 
-// Get 获取Data值
+// Get 获取`Data`值
 func (resp Response) Get(key string) (data *gvar.Var) {
 	m := gconv.Map(resp.Data)
 	if m == nil {
@@ -125,6 +127,16 @@ func RespSucc(req *ghttp.Request, data any) {
 // RespSuccExit 返回成功并退出
 func RespSuccExit(req *ghttp.Request, data any) {
 	req.Response.WriteJsonExit(Succ(data))
+}
+
+// RespJsonViaSSE 返回`JSON`流式数据
+func RespJsonViaSSE(req *ghttp.Request, data any) {
+	// 设置`SSE`的`Content-Type`
+	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
+	// 将`JSON`字符串作为数据发送
+	fmt.Fprint(req.Response.ResponseWriter, gtkjson.MustJsonMarshal(Succ(data)))
+	// 确保即时发送数据
+	req.Response.Flush()
 }
 
 // Redirect 重定向
