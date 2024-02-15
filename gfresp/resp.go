@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-16 01:02:16
+ * @LastEditTime: 2024-02-16 01:25:04
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -129,8 +129,8 @@ func ResSuccExit(req *ghttp.Request, data any) {
 	req.Response.WriteJsonExit(Succ(data))
 }
 
-// ResFailViaSSE 返回流式数据失败
-func ResFailViaSSE(req *ghttp.Request, err error, data ...any) {
+// ResFailStream 返回流式数据失败
+func ResFailStream(req *ghttp.Request, err error, data ...any) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 序列化数据为`JSON`字符串
@@ -144,8 +144,8 @@ func ResFailViaSSE(req *ghttp.Request, err error, data ...any) {
 	req.Exit()
 }
 
-// ResFailViaSSEPrintErr 返回流式数据失败，默认打印错误日志
-func ResFailViaSSEPrintErr(req *ghttp.Request, err error, data ...any) {
+// ResFailStreamPrintErr 返回流式数据失败，默认打印错误日志
+func ResFailStreamPrintErr(req *ghttp.Request, err error, data ...any) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 序列化数据为`JSON`字符串
@@ -163,8 +163,8 @@ func ResFailViaSSEPrintErr(req *ghttp.Request, err error, data ...any) {
 	req.Exit()
 }
 
-// ResSuccViaSSE 返回流式数据成功
-func ResSuccViaSSE(req *ghttp.Request, data ...any) {
+// ResSuccStream 返回流式数据成功
+func ResSuccStream(req *ghttp.Request, data ...any) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 准备发送的数据
