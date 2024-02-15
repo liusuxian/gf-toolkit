@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-15 23:52:11
+ * @LastEditTime: 2024-02-15 23:58:32
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -119,8 +119,8 @@ func ResFailPrintErrExit(req *ghttp.Request, err error, data ...any) {
 	req.Exit()
 }
 
-// RespSucc 返回成功
-func RespSucc(req *ghttp.Request, data any) {
+// ResSucc 返回成功
+func ResSucc(req *ghttp.Request, data any) {
 	req.Response.WriteJson(Succ(data))
 }
 
@@ -129,8 +129,8 @@ func RespSuccExit(req *ghttp.Request, data any) {
 	req.Response.WriteJsonExit(Succ(data))
 }
 
-// RespJsonViaSSE 返回`JSON`流式数据
-func RespJsonViaSSE(req *ghttp.Request, data any) {
+// ResJsonViaSSE 返回`JSON`流式数据
+func ResJsonViaSSE(req *ghttp.Request, data any) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 将`JSON`字符串作为数据发送
