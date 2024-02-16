@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-16 01:25:04
+ * @LastEditTime: 2024-02-17 04:57:37
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -171,10 +171,10 @@ func ResSuccStream(req *ghttp.Request, data ...any) {
 	var jsonData string
 	if len(data) > 0 {
 		// 序列化数据为`JSON`字符串
-		jsonData = gtkjson.MustJsonMarshal(Succ(data[0]))
+		jsonData = gtkjson.MustJsonMarshal(Response{Code: gcode.CodeOK.Code(), Message: "ING", Data: data[0]})
 	} else {
 		// 如果没有数据，则发送表示结束的消息
-		jsonData = gtkjson.MustJsonMarshal(Succ("EOF"))
+		jsonData = gtkjson.MustJsonMarshal(Response{Code: gcode.CodeOK.Code(), Message: "EOF", Data: "EOF"})
 	}
 	// 按`SSE`格式发送数据：'data: <jsonData>\n\n'
 	fmt.Fprintf(req.Response.ResponseWriter, "data: %s\n\n", jsonData)
