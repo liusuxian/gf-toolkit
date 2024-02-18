@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-17 06:21:07
+ * @LastEditTime: 2024-02-18 14:22:19
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -164,24 +164,17 @@ func ResFailStreamPrintErr(req *ghttp.Request, err error, data ...any) {
 }
 
 // ResSuccStream 返回流式数据成功
-func ResSuccStream(req *ghttp.Request, data ...any) {
+func ResSuccStream(req *ghttp.Request, data any, isEOF bool) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
-	// 准备发送的数据
-	var jsonData string
-	if len(data) > 0 {
-		// 序列化数据为`JSON`字符串
-		jsonData = gtkjson.MustJsonMarshal(Response{Code: gcode.CodeOK.Code(), Message: "ING", Data: data[0]})
-	} else {
-		// 如果没有数据，则发送表示结束的消息
-		jsonData = gtkjson.MustJsonMarshal(Response{Code: gcode.CodeOK.Code(), Message: "EOF"})
-	}
+	// 序列化数据为`JSON`字符串
+	jsonData := gtkjson.MustJsonMarshal(Succ(data))
 	// 按`SSE`格式发送数据：'data: <jsonData>\n\n'
 	fmt.Fprintf(req.Response.ResponseWriter, "data: %s\n\n", jsonData)
 	// 确保即时发送数据
 	req.Response.Flush()
-	// 如果没有数据要发送，结束请求处理
-	if len(data) == 0 {
+	// 结束请求处理
+	if isEOF {
 		req.Exit()
 	}
 }
