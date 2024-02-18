@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-18 14:22:19
+ * @LastEditTime: 2024-02-18 18:39:39
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -136,8 +136,8 @@ func ResFailStream(req *ghttp.Request, err error, data ...any) {
 	// 序列化数据为`JSON`字符串
 	rCode := gerror.Code(err)
 	jsonData := gtkjson.MustJsonMarshal(Fail(rCode.Code(), rCode.Message(), data...))
-	// 按`SSE`格式发送数据：'data: <jsonData>\n\n'
-	fmt.Fprintf(req.Response.ResponseWriter, "data: %s\n\n", jsonData)
+	// 发送数据：'<jsonData>\n'
+	fmt.Fprintf(req.Response.ResponseWriter, "%s\n", jsonData)
 	// 确保即时发送数据
 	req.Response.Flush()
 	// 结束请求处理
@@ -151,8 +151,8 @@ func ResFailStreamPrintErr(req *ghttp.Request, err error, data ...any) {
 	// 序列化数据为`JSON`字符串
 	rCode := gerror.Code(err)
 	jsonData := gtkjson.MustJsonMarshal(Fail(rCode.Code(), rCode.Message(), data...))
-	// 按`SSE`格式发送数据：'data: <jsonData>\n\n'
-	fmt.Fprintf(req.Response.ResponseWriter, "data: %s\n\n", jsonData)
+	// 发送数据：'<jsonData>\n'
+	fmt.Fprintf(req.Response.ResponseWriter, "%s\n", jsonData)
 	// 确保即时发送数据
 	req.Response.Flush()
 	// 打印错误日志
@@ -164,17 +164,17 @@ func ResFailStreamPrintErr(req *ghttp.Request, err error, data ...any) {
 }
 
 // ResSuccStream 返回流式数据成功
-func ResSuccStream(req *ghttp.Request, data any, isEOF bool) {
+func ResSuccStream(req *ghttp.Request, data any, isEOF ...bool) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 序列化数据为`JSON`字符串
 	jsonData := gtkjson.MustJsonMarshal(Succ(data))
-	// 按`SSE`格式发送数据：'data: <jsonData>\n\n'
-	fmt.Fprintf(req.Response.ResponseWriter, "data: %s\n\n", jsonData)
+	// 发送数据：'<jsonData>\n'
+	fmt.Fprintf(req.Response.ResponseWriter, "%s\n", jsonData)
 	// 确保即时发送数据
 	req.Response.Flush()
 	// 结束请求处理
-	if isEOF {
+	if len(isEOF) > 0 && isEOF[0] {
 		req.Exit()
 	}
 }
