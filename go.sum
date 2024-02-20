@@ -122,8 +122,8 @@ github.com/linkedin/goavro v2.1.0+incompatible/go.mod h1:bBCwI2eGYpUI/4820s67MEl
 github.com/linkedin/goavro/v2 v2.10.0/go.mod h1:UgQUb2N/pmueQYH9bfqFioWxzYCZXSfF8Jw03O5sjqA=
 github.com/linkedin/goavro/v2 v2.10.1/go.mod h1:UgQUb2N/pmueQYH9bfqFioWxzYCZXSfF8Jw03O5sjqA=
 github.com/linkedin/goavro/v2 v2.11.1/go.mod h1:UgQUb2N/pmueQYH9bfqFioWxzYCZXSfF8Jw03O5sjqA=
-github.com/liusuxian/go-toolkit v0.0.0-20240220140925-5b5c807c4a43 h1:aAeE4hn/YupFDq+gxNo9ubJbekzCyCZ+Ly1XVWVwhv8=
-github.com/liusuxian/go-toolkit v0.0.0-20240220140925-5b5c807c4a43/go.mod h1:0l7toy13owGRnrPzK3GhcsbYqy2rfkis3iFKruC7zjk=
+github.com/liusuxian/go-toolkit v0.0.0-20240220143315-1374c2ee77d5 h1:2FX41ybfBxr9vinTqEmHRPkmKXAESvWKDExPzrb1fe4=
+github.com/liusuxian/go-toolkit v0.0.0-20240220143315-1374c2ee77d5/go.mod h1:0l7toy13owGRnrPzK3GhcsbYqy2rfkis3iFKruC7zjk=
 github.com/magiconair/properties v1.8.7 h1:IeQXZAiQcpL9mgcAe1Nu6cX9LLw6ExEHKjN0VQdvPDY=
 github.com/magiconair/properties v1.8.7/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
 github.com/mattn/go-colorable v0.1.13 h1:fFA4WZxdEF4tXPZVKMLwD8oUnCTTo08duU7wxecdEvA=
