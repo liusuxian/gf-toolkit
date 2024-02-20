@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-18 18:39:39
+ * @LastEditTime: 2024-02-21 00:26:50
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -89,48 +89,38 @@ func Unauthorized(msg string, data any) (resp Response) {
 }
 
 // ResFail 返回失败
-func ResFail(req *ghttp.Request, err error, data ...any) {
+func ResFail(req *ghttp.Request, err error, isExit bool, data ...any) {
 	rCode := gerror.Code(err)
-	req.Response.WriteJson(Fail(rCode.Code(), rCode.Message(), data...))
-}
-
-// ResFailExit 返回失败并退出
-func ResFailExit(req *ghttp.Request, err error, data ...any) {
-	rCode := gerror.Code(err)
-	req.Response.WriteJsonExit(Fail(rCode.Code(), rCode.Message(), data...))
+	if isExit {
+		req.Response.WriteJsonExit(Fail(rCode.Code(), rCode.Message(), data...))
+	} else {
+		req.Response.WriteJson(Fail(rCode.Code(), rCode.Message(), data...))
+	}
 }
 
 // ResFailPrintErr 返回失败，默认打印错误日志
-func ResFailPrintErr(req *ghttp.Request, err error, data ...any) {
+func ResFailPrintErr(req *ghttp.Request, err error, isExit bool, data ...any) {
 	rCode := gerror.Code(err)
 	req.Response.WriteJson(Fail(rCode.Code(), rCode.Message(), data...))
 	req.SetError(err)
 	gflogger.HandlerErrorLog(req, 2)
 	req.SetError(nil)
-}
-
-// ResFailPrintErrExit 返回失败并退出，默认打印错误日志
-func ResFailPrintErrExit(req *ghttp.Request, err error, data ...any) {
-	rCode := gerror.Code(err)
-	req.Response.WriteJson(Fail(rCode.Code(), rCode.Message(), data...))
-	req.SetError(err)
-	gflogger.HandlerErrorLog(req, 2)
-	req.SetError(nil)
-	req.Exit()
+	if isExit {
+		req.Exit()
+	}
 }
 
 // ResSucc 返回成功
-func ResSucc(req *ghttp.Request, data any) {
-	req.Response.WriteJson(Succ(data))
-}
-
-// ResSuccExit 返回成功并退出
-func ResSuccExit(req *ghttp.Request, data any) {
-	req.Response.WriteJsonExit(Succ(data))
+func ResSucc(req *ghttp.Request, isExit bool, data any) {
+	if isExit {
+		req.Response.WriteJsonExit(Succ(data))
+	} else {
+		req.Response.WriteJson(Succ(data))
+	}
 }
 
 // ResFailStream 返回流式数据失败
-func ResFailStream(req *ghttp.Request, err error, data ...any) {
+func ResFailStream(req *ghttp.Request, err error, isExit bool, data ...any) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 序列化数据为`JSON`字符串
@@ -141,11 +131,13 @@ func ResFailStream(req *ghttp.Request, err error, data ...any) {
 	// 确保即时发送数据
 	req.Response.Flush()
 	// 结束请求处理
-	req.Exit()
+	if isExit {
+		req.Exit()
+	}
 }
 
 // ResFailStreamPrintErr 返回流式数据失败，默认打印错误日志
-func ResFailStreamPrintErr(req *ghttp.Request, err error, data ...any) {
+func ResFailStreamPrintErr(req *ghttp.Request, err error, isExit bool, data ...any) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 序列化数据为`JSON`字符串
@@ -160,11 +152,13 @@ func ResFailStreamPrintErr(req *ghttp.Request, err error, data ...any) {
 	gflogger.HandlerErrorLog(req, 2)
 	req.SetError(nil)
 	// 结束请求处理
-	req.Exit()
+	if isExit {
+		req.Exit()
+	}
 }
 
 // ResSuccStream 返回流式数据成功
-func ResSuccStream(req *ghttp.Request, data any, isEOF ...bool) {
+func ResSuccStream(req *ghttp.Request, data any, isExit bool) {
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 序列化数据为`JSON`字符串
@@ -174,7 +168,7 @@ func ResSuccStream(req *ghttp.Request, data any, isEOF ...bool) {
 	// 确保即时发送数据
 	req.Response.Flush()
 	// 结束请求处理
-	if len(isEOF) > 0 && isEOF[0] {
+	if isExit {
 		req.Exit()
 	}
 }
