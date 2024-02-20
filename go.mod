@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/gogf/gf/v2 v2.6.3
-	github.com/liusuxian/go-toolkit v0.0.0-20240220143315-1374c2ee77d5
+	github.com/liusuxian/go-toolkit v0.0.0-20240220160323-cd63864eb37b
 	github.com/stretchr/testify v1.8.4
 )
 
@@ -30,7 +30,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/redis/go-redis/v9 v9.5.0 // indirect
+	github.com/redis/go-redis/v9 v9.5.1 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	go.opentelemetry.io/otel v1.14.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.14.0 // indirect
