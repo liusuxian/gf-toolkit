@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 20:59:43
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 21:54:35
+ * @LastEditTime: 2024-02-20 23:53:26
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -11,13 +11,10 @@ package gflogger
 
 import (
 	"context"
-	"fmt"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/glog"
-	"github.com/gogf/gf/v2/os/gtime"
-	"github.com/gogf/gf/v2/text/gstr"
+	"github.com/liusuxian/gf-toolkit/internal/utils"
 )
 
 // Log 获取 log 对象
@@ -112,53 +109,10 @@ func Panicf(ctx context.Context, format string, v ...any) {
 
 // HandlerAccessLog
 func HandlerAccessLog(req *ghttp.Request, skip ...int) {
-	var (
-		scheme = "http"
-		proto  = req.Header.Get("X-Forwarded-Proto")
-	)
-	if req.TLS != nil || gstr.Equal(proto, "https") {
-		scheme = "https"
-	}
-	content := fmt.Sprintf(
-		`%d "%s %s %s %s %s" %.3f, %s, "%s", "%s"`,
-		req.Response.Status, req.Method, scheme, req.Host, req.URL.String(), req.Proto,
-		float64(gtime.TimestampMilli()-req.EnterTime)/1000,
-		req.GetClientIp(), req.Referer(), req.UserAgent(),
-	)
-	AccessLog().Stack(false, skip...).Debug(req.Context(), content)
+	AccessLog().Stack(false, skip...).Debug(req.Context(), utils.AccessLogContent(req))
 }
 
 // HandlerErrorLog
 func HandlerErrorLog(req *ghttp.Request, skip ...int) {
-	var err error
-	if err = req.GetError(); err == nil {
-		return
-	}
-
-	var (
-		rCode         = gerror.Code(err)
-		scheme        = "http"
-		codeDetail    = rCode.Detail()
-		proto         = req.Header.Get("X-Forwarded-Proto")
-		codeDetailStr string
-	)
-	if req.TLS != nil || gstr.Equal(proto, "https") {
-		scheme = "https"
-	}
-	if codeDetail != nil {
-		codeDetailStr = gstr.Replace(fmt.Sprintf(`%+v`, codeDetail), "\n", " ")
-	}
-	content := fmt.Sprintf(
-		`%d "%s %s %s %s %s" %.3f, %s, "%s", "%s", %d, "%s", "%+v"`,
-		req.Response.Status, req.Method, scheme, req.Host, req.URL.String(), req.Proto,
-		float64(gtime.TimestampMilli()-req.EnterTime)/1000,
-		req.GetClientIp(), req.Referer(), req.UserAgent(),
-		rCode.Code(), rCode.Message(), codeDetailStr,
-	)
-	if stack := gerror.Stack(err); stack != "" {
-		content += "\nStack:\n" + stack
-	} else {
-		content += ", " + err.Error()
-	}
-	ErrorLog().Stack(false, skip...).Error(req.Context(), content)
+	ErrorLog().Stack(false, skip...).Error(req.Context(), utils.ErrorLogContent(req))
 }
