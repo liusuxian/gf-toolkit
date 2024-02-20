@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-02-20 23:45:57
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-21 00:05:37
+ * @LastEditTime: 2024-02-21 00:45:30
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -18,6 +18,12 @@ import (
 // FeishuRobot
 type FeishuRobot struct {
 	*gtkrobot.FeishuRobot
+}
+
+func NewFeishuRobot(webHookURL string) (fr *FeishuRobot) {
+	return &FeishuRobot{
+		gtkrobot.NewFeishuRobot(webHookURL),
+	}
 }
 
 // SendErrorMessage 发送错误消息
