@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-21 00:26:50
+ * @LastEditTime: 2024-02-22 13:13:54
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -10,6 +10,7 @@
 package gfresp
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/gogf/gf/v2/container/gvar"
@@ -17,7 +18,6 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/liusuxian/gf-toolkit/gflogger"
 	"github.com/liusuxian/go-toolkit/gtkjson"
 	"net/http"
 )
@@ -98,25 +98,33 @@ func ResFail(req *ghttp.Request, err error, isExit bool, data ...any) {
 	}
 }
 
+// ResFailByCtx 返回失败
+func ResFailByCtx(ctx context.Context, err error, isExit bool, data ...any) {
+	ResFail(ghttp.RequestFromCtx(ctx), err, isExit, data...)
+}
+
 // ResFailPrintErr 返回失败，默认打印错误日志
 func ResFailPrintErr(req *ghttp.Request, err error, isExit bool, data ...any) {
-	rCode := gerror.Code(err)
-	req.Response.WriteJson(Fail(rCode.Code(), rCode.Message(), data...))
-	req.SetError(err)
-	gflogger.HandlerErrorLog(req, 2)
-	req.SetError(nil)
-	if isExit {
-		req.Exit()
-	}
+	resFailPrintErr(req, err, isExit, data...)
+}
+
+// ResFailPrintErrByCtx 返回失败，默认打印错误日志
+func ResFailPrintErrByCtx(ctx context.Context, err error, isExit bool, data ...any) {
+	resFailPrintErr(ghttp.RequestFromCtx(ctx), err, isExit, data...)
 }
 
 // ResSucc 返回成功
-func ResSucc(req *ghttp.Request, isExit bool, data any) {
+func ResSucc(req *ghttp.Request, data any, isExit bool) {
 	if isExit {
 		req.Response.WriteJsonExit(Succ(data))
 	} else {
 		req.Response.WriteJson(Succ(data))
 	}
+}
+
+// ResSuccByCtx 返回成功
+func ResSuccByCtx(ctx context.Context, data any, isExit bool) {
+	ResSucc(ghttp.RequestFromCtx(ctx), data, isExit)
 }
 
 // ResFailStream 返回流式数据失败
@@ -136,25 +144,19 @@ func ResFailStream(req *ghttp.Request, err error, isExit bool, data ...any) {
 	}
 }
 
+// ResFailStreamByCtx 返回流式数据失败
+func ResFailStreamByCtx(ctx context.Context, err error, isExit bool, data ...any) {
+	ResFailStream(ghttp.RequestFromCtx(ctx), err, isExit, data...)
+}
+
 // ResFailStreamPrintErr 返回流式数据失败，默认打印错误日志
 func ResFailStreamPrintErr(req *ghttp.Request, err error, isExit bool, data ...any) {
-	// 设置`SSE`的`Content-Type`
-	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
-	// 序列化数据为`JSON`字符串
-	rCode := gerror.Code(err)
-	jsonData := gtkjson.MustJsonMarshal(Fail(rCode.Code(), rCode.Message(), data...))
-	// 发送数据：'<jsonData>\n'
-	fmt.Fprintf(req.Response.ResponseWriter, "%s\n", jsonData)
-	// 确保即时发送数据
-	req.Response.Flush()
-	// 打印错误日志
-	req.SetError(err)
-	gflogger.HandlerErrorLog(req, 2)
-	req.SetError(nil)
-	// 结束请求处理
-	if isExit {
-		req.Exit()
-	}
+	resFailStreamPrintErr(req, err, isExit, data...)
+}
+
+// ResFailStreamPrintErrByCtx 返回流式数据失败，默认打印错误日志
+func ResFailStreamPrintErrByCtx(ctx context.Context, err error, isExit bool, data ...any) {
+	resFailStreamPrintErr(ghttp.RequestFromCtx(ctx), err, isExit, data...)
 }
 
 // ResSuccStream 返回流式数据成功
@@ -171,6 +173,11 @@ func ResSuccStream(req *ghttp.Request, data any, isExit bool) {
 	if isExit {
 		req.Exit()
 	}
+}
+
+// ResSuccStreamByCtx 返回流式数据成功
+func ResSuccStreamByCtx(ctx context.Context, data any, isExit bool) {
+	ResSuccStream(ghttp.RequestFromCtx(ctx), data, isExit)
 }
 
 // Redirect 重定向
