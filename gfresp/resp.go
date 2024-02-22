@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-22 13:13:54
+ * @LastEditTime: 2024-02-22 13:46:33
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -18,8 +18,15 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/liusuxian/gf-toolkit/gfrobot"
 	"github.com/liusuxian/go-toolkit/gtkjson"
 	"net/http"
+	"sync"
+)
+
+var (
+	once        sync.Once
+	feishuRobot *gfrobot.FeishuRobot // 飞书机器人
 )
 
 // Response 通用响应数据结构
@@ -88,8 +95,20 @@ func Unauthorized(msg string, data any) (resp Response) {
 	return Response{Code: http.StatusUnauthorized, Message: msg, Data: data}
 }
 
+// NewFeishuRobot 新建飞书机器人
+func NewFeishuRobot(webHookURL string) {
+	once.Do(func() {
+		feishuRobot = gfrobot.NewFeishuRobot(webHookURL)
+	})
+}
+
 // ResFail 返回失败
 func ResFail(req *ghttp.Request, err error, isExit bool, data ...any) {
+	if feishuRobot != nil {
+		go func() {
+			feishuRobot.SendErrMessage(req, err)
+		}()
+	}
 	rCode := gerror.Code(err)
 	if isExit {
 		req.Response.WriteJsonExit(Fail(rCode.Code(), rCode.Message(), data...))
@@ -129,6 +148,11 @@ func ResSuccByCtx(ctx context.Context, data any, isExit bool) {
 
 // ResFailStream 返回流式数据失败
 func ResFailStream(req *ghttp.Request, err error, isExit bool, data ...any) {
+	if feishuRobot != nil {
+		go func() {
+			feishuRobot.SendErrMessage(req, err)
+		}()
+	}
 	// 设置`SSE`的`Content-Type`
 	req.Response.Header().Set("Content-Type", "text/event-stream; charset=utf-8")
 	// 序列化数据为`JSON`字符串
