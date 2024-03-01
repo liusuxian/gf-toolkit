@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:15:17
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-26 22:30:52
+ * @LastEditTime: 2024-03-01 23:43:08
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -14,7 +14,7 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/liusuxian/gf-toolkit/gflogger"
-	"github.com/liusuxian/gf-toolkit/gfresp"
+	"github.com/liusuxian/go-toolkit/gtkresp"
 	"net/http"
 )
 
@@ -63,14 +63,14 @@ func doHandlerResponse(req *ghttp.Request, isPrint bool) {
 		}
 	}
 	// 返回
-	req.Response.WriteJson(gfresp.Response{
+	gtkresp.WriteJson(req.Response.Writer, gtkresp.Response{
 		Code:    rCode.Code(),
 		Message: rCode.Message(),
 		Data:    res,
 	})
 	// 是否打印错误
 	if isPrint {
-		gflogger.HandlerErrorLog(req, 1)
+		gflogger.HandlerErrorLog(req, err, 1)
 	}
 	// 防止 GoFrame 框架自动打印错误日志
 	req.SetError(nil)

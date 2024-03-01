@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-02-20 23:40:38
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-20 23:53:15
+ * @LastEditTime: 2024-03-01 23:17:38
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -36,9 +36,8 @@ func AccessLogContent(req *ghttp.Request) (content string) {
 }
 
 // ErrorLogContent
-func ErrorLogContent(req *ghttp.Request) (content string) {
-	var err error
-	if err = req.GetError(); err == nil {
+func ErrorLogContent(req *ghttp.Request, err error) (content string) {
+	if err == nil {
 		return
 	}
 

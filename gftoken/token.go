@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-20 15:38:07
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-29 18:05:23
+ * @LastEditTime: 2024-03-01 23:05:46
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -22,8 +22,8 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gogf/gf/v2/util/grand"
 	"github.com/liusuxian/gf-toolkit/gflogger"
-	"github.com/liusuxian/gf-toolkit/gfresp"
 	"github.com/liusuxian/go-toolkit/gtkcache"
+	"github.com/liusuxian/go-toolkit/gtkresp"
 	"net/http"
 	"strings"
 )
@@ -58,11 +58,11 @@ type Token struct {
 	// 认证验证方法 return true 继续执行，否则结束执行
 	AuthBeforeFunc func(r *ghttp.Request) bool
 	// 认证返回方法
-	AuthAfterFunc func(r *ghttp.Request, respData gfresp.Response)
+	AuthAfterFunc func(r *ghttp.Request, respData gtkresp.Response)
 }
 
 // GenToken 生成Token
-func (m *Token) GenToken(ctx context.Context, userKey string, data any) (respToken gfresp.Response) {
+func (m *Token) GenToken(ctx context.Context, userKey string, data any) (respToken gtkresp.Response) {
 	if userKey == "" {
 		gflogger.Error(ctx, msgLog(MsgErrUserKeyEmpty))
 		return
@@ -118,7 +118,7 @@ func (m *Token) authMiddleware(r *ghttp.Request) {
 }
 
 // GetTokenData 通过token获取对象
-func (m *Token) GetTokenData(r *ghttp.Request) gfresp.Response {
+func (m *Token) GetTokenData(r *ghttp.Request) gtkresp.Response {
 	respData := m.getRequestToken(r)
 	if respData.Success() {
 		// 验证token
@@ -182,31 +182,31 @@ func (m *Token) AuthPath(ctx context.Context, urlPath string) bool {
 }
 
 // getRequestToken 返回请求Token
-func (m *Token) getRequestToken(r *ghttp.Request) gfresp.Response {
+func (m *Token) getRequestToken(r *ghttp.Request) gtkresp.Response {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader != "" {
 		parts := strings.SplitN(authHeader, " ", 2)
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
 			gflogger.Warning(r.Context(), msgLog(MsgErrAuthHeader, authHeader))
-			return gfresp.Unauthorized(fmt.Sprintf(MsgErrAuthHeader, authHeader), "")
+			return gtkresp.Unauthorized(fmt.Sprintf(MsgErrAuthHeader, authHeader), "")
 		} else if parts[1] == "" {
 			gflogger.Warning(r.Context(), msgLog(MsgErrAuthHeader, authHeader))
-			return gfresp.Unauthorized(fmt.Sprintf(MsgErrAuthHeader, authHeader), "")
+			return gtkresp.Unauthorized(fmt.Sprintf(MsgErrAuthHeader, authHeader), "")
 		}
 
-		return gfresp.Succ(parts[1])
+		return gtkresp.Succ(parts[1])
 	}
 
 	authHeader = r.Get(KeyToken).String()
 	if authHeader == "" {
-		return gfresp.Unauthorized(MsgErrTokenEmpty, "")
+		return gtkresp.Unauthorized(MsgErrTokenEmpty, "")
 	}
-	return gfresp.Succ(authHeader)
+	return gtkresp.Succ(authHeader)
 
 }
 
 // genToken 生成Token
-func (m *Token) genToken(ctx context.Context, userKey string, data any) gfresp.Response {
+func (m *Token) genToken(ctx context.Context, userKey string, data any) gtkresp.Response {
 	token := m.EncryptToken(ctx, userKey, "")
 	if !token.Success() {
 		return token
@@ -230,9 +230,9 @@ func (m *Token) genToken(ctx context.Context, userKey string, data any) gfresp.R
 }
 
 // validToken 验证Token
-func (m *Token) validToken(ctx context.Context, token string) gfresp.Response {
+func (m *Token) validToken(ctx context.Context, token string) gtkresp.Response {
 	if token == "" {
-		return gfresp.Unauthorized(MsgErrTokenEmpty, "")
+		return gtkresp.Unauthorized(MsgErrTokenEmpty, "")
 	}
 
 	decryptToken := m.DecryptToken(ctx, token)
@@ -249,15 +249,15 @@ func (m *Token) validToken(ctx context.Context, token string) gfresp.Response {
 	}
 
 	if uuid != userCacheResp.GetString(KeyUuid) {
-		gflogger.Debug(ctx, msgLog(MsgErrAuthUuid)+", decryptToken:"+decryptToken.Json()+" cacheValue:"+gconv.String(userCacheResp.Data))
-		return gfresp.Unauthorized(MsgErrAuthUuid, "")
+		gflogger.Debug(ctx, fmt.Sprintf("%s, decryptToken:%s cacheValue:%s", msgLog(MsgErrAuthUuid), decryptToken.MustJson(), gconv.String(userCacheResp.Data)))
+		return gtkresp.Unauthorized(MsgErrAuthUuid, "")
 	}
 
 	return userCacheResp
 }
 
 // getToken 通过userKey获取Token
-func (m *Token) getToken(ctx context.Context, userKey string) gfresp.Response {
+func (m *Token) getToken(ctx context.Context, userKey string) gtkresp.Response {
 	cacheKey := m.CacheKey + userKey
 
 	userCacheResp := m.getCache(ctx, cacheKey)
@@ -276,11 +276,11 @@ func (m *Token) getToken(ctx context.Context, userKey string) gfresp.Response {
 		return m.setCache(ctx, cacheKey, userCache)
 	}
 
-	return gfresp.Succ(userCache)
+	return gtkresp.Succ(userCache)
 }
 
 // RemoveToken 删除Token
-func (m *Token) RemoveToken(ctx context.Context, token string) gfresp.Response {
+func (m *Token) RemoveToken(ctx context.Context, token string) gtkresp.Response {
 	decryptToken := m.DecryptToken(ctx, token)
 	if !decryptToken.Success() {
 		return decryptToken
@@ -291,9 +291,9 @@ func (m *Token) RemoveToken(ctx context.Context, token string) gfresp.Response {
 }
 
 // EncryptToken token加密方法
-func (m *Token) EncryptToken(ctx context.Context, userKey string, uuid string) gfresp.Response {
+func (m *Token) EncryptToken(ctx context.Context, userKey string, uuid string) gtkresp.Response {
 	if userKey == "" {
-		return gfresp.Fail(FAIL, MsgErrUserKeyEmpty)
+		return gtkresp.Fail(FAIL, MsgErrUserKeyEmpty)
 	}
 
 	if uuid == "" {
@@ -301,7 +301,7 @@ func (m *Token) EncryptToken(ctx context.Context, userKey string, uuid string) g
 		newUuid, err := gmd5.Encrypt(grand.Letters(10))
 		if err != nil {
 			gflogger.Error(ctx, msgLog(MsgErrAuthUuid), err)
-			return gfresp.Fail(ERROR, MsgErrAuthUuid)
+			return gtkresp.Fail(ERROR, MsgErrAuthUuid)
 		}
 		uuid = newUuid
 	}
@@ -311,10 +311,10 @@ func (m *Token) EncryptToken(ctx context.Context, userKey string, uuid string) g
 	token, err := gaes.Encrypt([]byte(tokenStr), m.EncryptKey)
 	if err != nil {
 		gflogger.Error(ctx, msgLog(MsgErrTokenEncrypt), tokenStr, err)
-		return gfresp.Fail(ERROR, MsgErrTokenEncrypt)
+		return gtkresp.Fail(ERROR, MsgErrTokenEncrypt)
 	}
 
-	return gfresp.Succ(g.Map{
+	return gtkresp.Succ(g.Map{
 		KeyUserKey: userKey,
 		KeyUuid:    uuid,
 		KeyToken:   gbase64.EncodeToString(token),
@@ -322,28 +322,28 @@ func (m *Token) EncryptToken(ctx context.Context, userKey string, uuid string) g
 }
 
 // DecryptToken token解密方法
-func (m *Token) DecryptToken(ctx context.Context, token string) gfresp.Response {
+func (m *Token) DecryptToken(ctx context.Context, token string) gtkresp.Response {
 	if token == "" {
-		return gfresp.Fail(FAIL, MsgErrTokenEmpty)
+		return gtkresp.Fail(FAIL, MsgErrTokenEmpty)
 	}
 
 	token64, err := gbase64.Decode([]byte(token))
 	if err != nil {
 		gflogger.Error(ctx, msgLog(MsgErrTokenDecode), token, err)
-		return gfresp.Fail(ERROR, MsgErrTokenDecode)
+		return gtkresp.Fail(ERROR, MsgErrTokenDecode)
 	}
 	decryptToken, err2 := gaes.Decrypt(token64, m.EncryptKey)
 	if err2 != nil {
 		gflogger.Error(ctx, msgLog(MsgErrTokenEncrypt), token, err2)
-		return gfresp.Fail(ERROR, MsgErrTokenEncrypt)
+		return gtkresp.Fail(ERROR, MsgErrTokenEncrypt)
 	}
 	tokenArray := gstr.Split(string(decryptToken), m.TokenDelimiter)
 	if len(tokenArray) < 2 {
 		gflogger.Error(ctx, msgLog(MsgErrTokenLen), token)
-		return gfresp.Fail(ERROR, MsgErrTokenLen)
+		return gtkresp.Fail(ERROR, MsgErrTokenLen)
 	}
 
-	return gfresp.Succ(g.Map{
+	return gtkresp.Succ(g.Map{
 		KeyUserKey: tokenArray[0],
 		KeyUuid:    tokenArray[1],
 	})
@@ -390,7 +390,7 @@ func (m *Token) InitConfig() {
 		}
 	}
 	if m.AuthAfterFunc == nil {
-		m.AuthAfterFunc = func(r *ghttp.Request, respData gfresp.Response) {
+		m.AuthAfterFunc = func(r *ghttp.Request, respData gtkresp.Response) {
 			if respData.Success() {
 				r.Middleware.Next()
 			} else {
@@ -400,16 +400,16 @@ func (m *Token) InitConfig() {
 				} else if r.Method == http.MethodPost {
 					params = r.GetMap()
 				} else {
-					r.Response.Writeln(MsgErrReqMethod)
+					gtkresp.Writeln(r.Response.Writer, MsgErrReqMethod)
 					return
 				}
 
 				no := gconv.String(gtime.TimestampMilli())
 
 				gflogger.Warning(r.Context(), fmt.Sprintf("[AUTH_%s][url:%s][params:%s][data:%s]",
-					no, r.URL.Path, params, respData.Json()))
+					no, r.URL.Path, params, respData.MustJson()))
 				respData.Message = m.AuthFailMsg
-				r.Response.WriteJson(respData)
+				gtkresp.WriteJson(r.Response.Writer, respData)
 				r.ExitAll()
 			}
 		}

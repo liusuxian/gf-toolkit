@@ -113,6 +113,6 @@ func HandlerAccessLog(req *ghttp.Request, skip ...int) {
 }
 
 // HandlerErrorLog
-func HandlerErrorLog(req *ghttp.Request, skip ...int) {
-	ErrorLog().Stack(false, skip...).Error(req.Context(), utils.ErrorLogContent(req))
+func HandlerErrorLog(req *ghttp.Request, err error, skip ...int) {
+	ErrorLog().Stack(false, skip...).Error(req.Context(), utils.ErrorLogContent(req, err))
 }

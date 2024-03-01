@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-20 15:38:07
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-01-29 18:20:29
+ * @LastEditTime: 2024-03-01 22:52:55
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -18,12 +18,12 @@ import (
 	"github.com/gogf/gf/v2/os/gfile"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/liusuxian/gf-toolkit/gflogger"
-	"github.com/liusuxian/gf-toolkit/gfresp"
+	"github.com/liusuxian/go-toolkit/gtkresp"
 	"time"
 )
 
 // setCache 设置缓存
-func (m *Token) setCache(ctx context.Context, cacheKey string, userCache g.Map) gfresp.Response {
+func (m *Token) setCache(ctx context.Context, cacheKey string, userCache g.Map) gtkresp.Response {
 	switch m.CacheMode {
 	case CacheModeCache, CacheModeFile:
 		gcache.Set(ctx, cacheKey, userCache, gconv.Duration(m.Timeout)*time.Millisecond)
@@ -37,21 +37,21 @@ func (m *Token) setCache(ctx context.Context, cacheKey string, userCache g.Map) 
 		)
 		if cacheValueJson, err = gjson.Encode(userCache); err != nil {
 			gflogger.Error(ctx, "[gftoken]cache json encode error", err)
-			return gfresp.Fail(ERROR, "cache json encode error")
+			return gtkresp.Fail(ERROR, "cache json encode error")
 		}
 		if err := m.RedisCache.Set(ctx, cacheKey, cacheValueJson, time.Duration(m.Timeout/1000)*time.Second); err != nil {
 			gflogger.Error(ctx, "[gftoken]cache set error", err)
-			return gfresp.Fail(ERROR, "cache set error")
+			return gtkresp.Fail(ERROR, "cache set error")
 		}
 	default:
-		return gfresp.Fail(ERROR, "cache model error")
+		return gtkresp.Fail(ERROR, "cache model error")
 	}
 
-	return gfresp.Succ(userCache)
+	return gtkresp.Succ(userCache)
 }
 
 // getCache 获取缓存
-func (m *Token) getCache(ctx context.Context, cacheKey string) gfresp.Response {
+func (m *Token) getCache(ctx context.Context, cacheKey string) gtkresp.Response {
 	var userCache g.Map
 	switch m.CacheMode {
 	case CacheModeCache, CacheModeFile:
@@ -61,10 +61,10 @@ func (m *Token) getCache(ctx context.Context, cacheKey string) gfresp.Response {
 		)
 		if userCacheValue, err = gcache.Get(ctx, cacheKey); err != nil {
 			gflogger.Error(ctx, "[gftoken]cache get error", err)
-			return gfresp.Fail(ERROR, "cache get error")
+			return gtkresp.Fail(ERROR, "cache get error")
 		}
 		if userCacheValue.IsNil() {
-			return gfresp.Unauthorized("login timeout or not login", "")
+			return gtkresp.Unauthorized("login timeout or not login", "")
 		}
 		userCache = gconv.Map(userCacheValue)
 	case CacheModeRedis:
@@ -74,24 +74,24 @@ func (m *Token) getCache(ctx context.Context, cacheKey string) gfresp.Response {
 		)
 		if userCacheJson, err = m.RedisCache.Get(ctx, cacheKey); err != nil {
 			gflogger.Error(ctx, "[gftoken]cache get error", err)
-			return gfresp.Fail(ERROR, "cache get error")
+			return gtkresp.Fail(ERROR, "cache get error")
 		}
 		if userCacheJson == nil {
-			return gfresp.Unauthorized("login timeout or not login", "")
+			return gtkresp.Unauthorized("login timeout or not login", "")
 		}
 		if err = gjson.DecodeTo(userCacheJson, &userCache); err != nil {
 			gflogger.Error(ctx, "[gftoken]cache get json error", err)
-			return gfresp.Fail(ERROR, "cache get json error")
+			return gtkresp.Fail(ERROR, "cache get json error")
 		}
 	default:
-		return gfresp.Fail(ERROR, "cache model error")
+		return gtkresp.Fail(ERROR, "cache model error")
 	}
 
-	return gfresp.Succ(userCache)
+	return gtkresp.Succ(userCache)
 }
 
 // removeCache 删除缓存
-func (m *Token) removeCache(ctx context.Context, cacheKey string) gfresp.Response {
+func (m *Token) removeCache(ctx context.Context, cacheKey string) gtkresp.Response {
 	switch m.CacheMode {
 	case CacheModeCache, CacheModeFile:
 		if _, err := gcache.Remove(ctx, cacheKey); err != nil {
@@ -103,13 +103,13 @@ func (m *Token) removeCache(ctx context.Context, cacheKey string) gfresp.Respons
 	case CacheModeRedis:
 		if err := m.RedisCache.Delete(ctx, cacheKey); err != nil {
 			gflogger.Error(ctx, "[gftoken]cache remove error", err)
-			return gfresp.Fail(ERROR, "cache remove error")
+			return gtkresp.Fail(ERROR, "cache remove error")
 		}
 	default:
-		return gfresp.Fail(ERROR, "cache model error")
+		return gtkresp.Fail(ERROR, "cache model error")
 	}
 
-	return gfresp.Succ("")
+	return gtkresp.Succ("")
 }
 
 func (m *Token) writeFileCache(ctx context.Context) {
