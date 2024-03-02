@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:04:44
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-03-02 18:18:13
+ * @LastEditTime: 2024-03-02 18:36:40
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -88,15 +88,15 @@ func WriteSuccMessage(ws *ghttp.WebSocket, messageType int, data any) (err error
 }
 
 // WriteFailMessage 写失败响应消息
-func WriteFailMessage(req *ghttp.Request, ws *ghttp.WebSocket, err error, messageType int, data ...any) (e error) {
+func WriteFailMessage(req *ghttp.Request, ws *ghttp.WebSocket, messageType int, err error, data ...any) (e error) {
 	sendFeishuRobot(req, err) // 发送飞书机器人
 	rCode := gerror.Code(err)
 	return gtkresp.WriteFailMessage(ws.Conn, messageType, rCode.Code(), rCode.Message(), data...)
 }
 
 // WriteFailMessagePrintErr 写失败响应消息，默认打印错误日志
-func WriteFailMessagePrintErr(req *ghttp.Request, ws *ghttp.WebSocket, err error, messageType int, data ...any) (e error) {
-	e = WriteFailMessage(req, ws, err, messageType, data...)
+func WriteFailMessagePrintErr(req *ghttp.Request, ws *ghttp.WebSocket, messageType int, err error, data ...any) (e error) {
+	e = WriteFailMessage(req, ws, messageType, err, data...)
 	gflogger.HandlerErrorLog(req, err, 2)
 	return
 }
