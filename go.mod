@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/gogf/gf/v2 v2.6.3
-	github.com/liusuxian/go-toolkit v0.0.0-20240302100437-e1bf5549b33c
+	github.com/liusuxian/go-toolkit v0.0.0-20240306084123-8bdc93872fc7
 	github.com/stretchr/testify v1.9.0
 )
 
@@ -38,6 +38,6 @@ require (
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
