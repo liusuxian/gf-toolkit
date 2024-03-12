@@ -1,11 +1,11 @@
 module github.com/liusuxian/gf-toolkit
 
-go 1.20
+go 1.22.0
 
 require (
 	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/gogf/gf/v2 v2.6.4
-	github.com/liusuxian/go-toolkit v0.0.0-20240312134413-4a341b2884d9
+	github.com/liusuxian/go-toolkit v0.0.0-20240312140206-3468a4cc923d
 	github.com/stretchr/testify v1.9.0
 )
 
