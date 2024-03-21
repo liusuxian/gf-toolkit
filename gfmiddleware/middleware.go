@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:15:17
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-03-21 20:47:34
+ * @LastEditTime: 2024-03-21 22:50:50
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -60,13 +60,21 @@ func HandlerResponse(req *ghttp.Request) {
 	})
 }
 
-// HandlerError 响应错误拦截中间件
-func HandlerError(req *ghttp.Request) {
+// HandlerPrintError 打印响应错误中间件
+func HandlerPrintError(req *ghttp.Request) {
 	req.Middleware.Next()
 
 	if err := req.GetError(); err != nil {
 		// 打印错误
 		gflogger.PrintError(req, err, 1)
+	}
+}
+
+// HandlerClearError 清除响应错误中间件
+func HandlerClearError(req *ghttp.Request) {
+	req.Middleware.Next()
+
+	if err := req.GetError(); err != nil {
 		// 防止 GoFrame 框架自动打印错误日志
 		req.SetError(nil)
 	}
