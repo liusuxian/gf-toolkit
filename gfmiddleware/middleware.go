@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:15:17
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-03-21 20:27:57
+ * @LastEditTime: 2024-03-21 20:47:34
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -66,7 +66,7 @@ func HandlerError(req *ghttp.Request) {
 
 	if err := req.GetError(); err != nil {
 		// 打印错误
-		gflogger.HandlerErrorLog(req, err, 1)
+		gflogger.PrintError(req, err, 1)
 		// 防止 GoFrame 框架自动打印错误日志
 		req.SetError(nil)
 	}

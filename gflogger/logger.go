@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 20:59:43
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-02-20 23:53:26
+ * @LastEditTime: 2024-03-21 20:46:36
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -11,10 +11,13 @@ package gflogger
 
 import (
 	"context"
+	"fmt"
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/glog"
-	"github.com/liusuxian/gf-toolkit/internal/utils"
+	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/v2/text/gstr"
 )
 
 // Log 获取 log 对象
@@ -107,12 +110,64 @@ func Panicf(ctx context.Context, format string, v ...any) {
 	ErrorLog().Stack(false, 1).Panicf(ctx, format, v...)
 }
 
-// HandlerAccessLog
-func HandlerAccessLog(req *ghttp.Request, skip ...int) {
-	AccessLog().Stack(false, skip...).Debug(req.Context(), utils.AccessLogContent(req))
+// AccessContent
+func AccessContent(req *ghttp.Request) (content string) {
+	var (
+		scheme = "http"
+		proto  = req.Header.Get("X-Forwarded-Proto")
+	)
+	if req.TLS != nil || gstr.Equal(proto, "https") {
+		scheme = "https"
+	}
+	content = fmt.Sprintf(
+		`%d "%s %s %s %s %s" %.3f, %s, "%s", "%s"`,
+		req.Response.Status, req.Method, scheme, req.Host, req.URL.String(), req.Proto,
+		float64(gtime.TimestampMilli()-req.EnterTime)/1000,
+		req.GetClientIp(), req.Referer(), req.UserAgent(),
+	)
+	return
 }
 
-// HandlerErrorLog
-func HandlerErrorLog(req *ghttp.Request, err error, skip ...int) {
-	ErrorLog().Stack(false, skip...).Error(req.Context(), utils.ErrorLogContent(req, err))
+// ErrorContent
+func ErrorContent(req *ghttp.Request, err error) (content string) {
+	if err == nil {
+		return
+	}
+
+	var (
+		rCode         = gerror.Code(err)
+		scheme        = "http"
+		codeDetail    = rCode.Detail()
+		proto         = req.Header.Get("X-Forwarded-Proto")
+		codeDetailStr string
+	)
+	if req.TLS != nil || gstr.Equal(proto, "https") {
+		scheme = "https"
+	}
+	if codeDetail != nil {
+		codeDetailStr = gstr.Replace(fmt.Sprintf(`%+v`, codeDetail), "\n", " ")
+	}
+	content = fmt.Sprintf(
+		`%d "%s %s %s %s %s" %.3f, %s, "%s", "%s", %d, "%s", "%+v"`,
+		req.Response.Status, req.Method, scheme, req.Host, req.URL.String(), req.Proto,
+		float64(gtime.TimestampMilli()-req.EnterTime)/1000,
+		req.GetClientIp(), req.Referer(), req.UserAgent(),
+		rCode.Code(), rCode.Message(), codeDetailStr,
+	)
+	if stack := gerror.Stack(err); stack != "" {
+		content += "\nStack:\n" + stack
+	} else {
+		content += ", " + err.Error()
+	}
+	return
+}
+
+// PrintAccess
+func PrintAccess(req *ghttp.Request, skip ...int) {
+	AccessLog().Stack(false, skip...).Debug(req.Context(), AccessContent(req))
+}
+
+// PrintError
+func PrintError(req *ghttp.Request, err error, skip ...int) {
+	ErrorLog().Stack(false, skip...).Error(req.Context(), ErrorContent(req, err))
 }
