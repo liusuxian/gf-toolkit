@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 20:59:43
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-03-21 20:46:36
+ * @LastEditTime: 2024-04-11 17:55:45
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -122,7 +122,7 @@ func AccessContent(req *ghttp.Request) (content string) {
 	content = fmt.Sprintf(
 		`%d "%s %s %s %s %s" %.3f, %s, "%s", "%s"`,
 		req.Response.Status, req.Method, scheme, req.Host, req.URL.String(), req.Proto,
-		float64(gtime.TimestampMilli()-req.EnterTime)/1000,
+		float64(gtime.TimestampMilli()-req.EnterTime.TimestampMilli())/1000,
 		req.GetClientIp(), req.Referer(), req.UserAgent(),
 	)
 	return
@@ -150,7 +150,7 @@ func ErrorContent(req *ghttp.Request, err error) (content string) {
 	content = fmt.Sprintf(
 		`%d "%s %s %s %s %s" %.3f, %s, "%s", "%s", %d, "%s", "%+v"`,
 		req.Response.Status, req.Method, scheme, req.Host, req.URL.String(), req.Proto,
-		float64(gtime.TimestampMilli()-req.EnterTime)/1000,
+		float64(gtime.TimestampMilli()-req.EnterTime.TimestampMilli())/1000,
 		req.GetClientIp(), req.Referer(), req.UserAgent(),
 		rCode.Code(), rCode.Message(), codeDetailStr,
 	)
