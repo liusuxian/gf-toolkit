@@ -4,7 +4,7 @@ go 1.22.4
 
 require (
 	github.com/gogf/gf/v2 v2.7.1
-	github.com/liusuxian/go-toolkit v0.0.0-20240611110254-a489a3f0ecdc
+	github.com/liusuxian/go-toolkit v0.0.0-20240615133702-46f34dc99474
 )
 
 require (
@@ -17,7 +17,7 @@ require (
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
-	github.com/gorilla/websocket v1.5.2 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/grokify/html-strip-tags-go v0.1.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
