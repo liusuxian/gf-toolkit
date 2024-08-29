@@ -4,7 +4,7 @@ go 1.22.4
 
 require (
 	github.com/gogf/gf/v2 v2.7.2
-	github.com/liusuxian/go-toolkit v0.0.0-20240829111839-4d9d85350e7b
+	github.com/liusuxian/go-toolkit v0.0.0-20240829130615-329882f3f73f
 )
 
 require (
@@ -12,6 +12,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
