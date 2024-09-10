@@ -33,8 +33,8 @@ github.com/go-viper/mapstructure/v2 v2.1.0 h1:gHnMa2Y/pIxElCH2GlZZ1lZSsn6XMtufpG
 github.com/go-viper/mapstructure/v2 v2.1.0/go.mod h1:oJDH3BJKyqBA2TXFhDsKDGDTlndYOZ6rGS0BRZIxGhM=
 github.com/gofrs/uuid v4.4.0+incompatible h1:3qXRTX8/NbyulANqlc0lchS1gqAVxRgsuW1YrTJupqA=
 github.com/gofrs/uuid v4.4.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
-github.com/gogf/gf/v2 v2.7.2 h1:uZDfyblasI12lZUtFd1mfxsIr8b14cd/F88DJUTCSDM=
-github.com/gogf/gf/v2 v2.7.2/go.mod h1:EBXneAg/wes86rfeh68XC0a2JBNQylmT7Sp6/8Axk88=
+github.com/gogf/gf/v2 v2.7.3 h1:0RTqeDYJOrD/FpiSsEopTs5SvYg+u6WPtS0TaXJcGoQ=
+github.com/gogf/gf/v2 v2.7.3/go.mod h1:EBXneAg/wes86rfeh68XC0a2JBNQylmT7Sp6/8Axk88=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aNNg=
