@@ -2,7 +2,7 @@
  * @Author: liusuxian 382185882@qq.com
  * @Date: 2024-01-19 21:15:17
  * @LastEditors: liusuxian 382185882@qq.com
- * @LastEditTime: 2024-04-11 17:55:37
+ * @LastEditTime: 2024-09-24 23:08:29
  * @Description:
  *
  * Copyright (c) 2024 by liusuxian email: 382185882@qq.com, All Rights Reserved.
@@ -53,7 +53,7 @@ func HandlerResponse(req *ghttp.Request) {
 		}
 	}
 	// 返回
-	gtkresp.WriteJson(req.Response.Writer, gtkresp.Response{
+	gtkresp.WriteJson(req.Response.BufferWriter, gtkresp.Response{
 		Code:    rCode.Code(),
 		Message: rCode.Message(),
 		Data:    res,
