@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	github.com/gogf/gf/v2 v2.7.4
-	github.com/liusuxian/go-toolkit v0.0.0-20241005102908-937c0a644391
+	github.com/liusuxian/go-toolkit v0.0.0-20241009004927-523091ef22d2
 )
 
 require (
@@ -37,6 +37,6 @@ require (
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
-	google.golang.org/protobuf v1.34.2 // indirect
+	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
