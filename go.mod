@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	github.com/gogf/gf/v2 v2.7.4
-	github.com/liusuxian/go-toolkit v0.0.0-20241023021146-3d5b583393cd
+	github.com/liusuxian/go-toolkit v0.0.0-20241101081639-bc26423be44f
 )
 
 require (
@@ -15,7 +15,7 @@ require (
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
