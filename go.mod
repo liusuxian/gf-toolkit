@@ -1,10 +1,10 @@
 module github.com/liusuxian/gf-toolkit
 
-go 1.23.2
+go 1.23.3
 
 require (
-	github.com/gogf/gf/v2 v2.8.0
-	github.com/liusuxian/go-toolkit v0.0.0-20241114123219-71a8a20f1412
+	github.com/gogf/gf/v2 v2.8.1
+	github.com/liusuxian/go-toolkit v0.0.0-20241128091828-b69c1948fef6
 )
 
 require (
