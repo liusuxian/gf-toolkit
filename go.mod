@@ -4,7 +4,7 @@ go 1.23.3
 
 require (
 	github.com/gogf/gf/v2 v2.8.2
-	github.com/liusuxian/go-toolkit v0.0.0-20241206032435-08c81c512202
+	github.com/liusuxian/go-toolkit v0.0.0-20241213094422-377ce19d9b7a
 )
 
 require (
