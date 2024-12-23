@@ -3,7 +3,7 @@ module github.com/liusuxian/gf-toolkit
 go 1.23.3
 
 require (
-	github.com/gogf/gf/v2 v2.8.2
+	github.com/gogf/gf/v2 v2.8.3
 	github.com/liusuxian/go-toolkit v0.0.0-20241218022836-d18464d0c41d
 )
 
