@@ -41,8 +41,8 @@ github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aN
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/grokify/html-strip-tags-go v0.1.0 h1:03UrQLjAny8xci+R+qjCce/MYnpNXCtgzltlQbOBae4=
 github.com/grokify/html-strip-tags-go v0.1.0/go.mod h1:ZdzgfHEzAfz9X6Xe5eBLVblWIxXfYSQ40S/VKrAOGpc=
-github.com/liusuxian/go-toolkit v0.0.0-20250115162420-7786e4865095 h1:aKf1yWkHbj6PKaDlih0ZgosnH3LThzyMua4XDEfwTL4=
-github.com/liusuxian/go-toolkit v0.0.0-20250115162420-7786e4865095/go.mod h1:tECEfYtRUnyK5Wf9asNe2vQHZ5N4XArvIhWHOGzivPw=
+github.com/liusuxian/go-toolkit v0.0.0-20250117062506-ae762dee715a h1:MM3LRT5uBCWlWdKoDIv74Rs5JXzPJYmufmOVhxPAAoI=
+github.com/liusuxian/go-toolkit v0.0.0-20250117062506-ae762dee715a/go.mod h1:5bS6h8k5cwIY61J6PnkH+ZBnU/ySI1Jyj12JG0YXN0Y=
 github.com/magiconair/properties v1.8.9 h1:nWcCbLq1N2v/cpNsy5WvQ37Fb+YElfq20WJ/a8RkpQM=
 github.com/magiconair/properties v1.8.9/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
 github.com/mattn/go-colorable v0.1.13 h1:fFA4WZxdEF4tXPZVKMLwD8oUnCTTo08duU7wxecdEvA=
