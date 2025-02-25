@@ -4,7 +4,7 @@ go 1.23.3
 
 require (
 	github.com/gogf/gf/v2 v2.8.3
-	github.com/liusuxian/go-toolkit v0.0.0-20250208064508-9e934c7fe14c
+	github.com/liusuxian/go-toolkit v0.0.0-20250225073407-d8c615671f2f
 )
 
 require (
@@ -28,7 +28,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/redis/go-redis/v9 v9.7.0 // indirect
+	github.com/redis/go-redis/v9 v9.7.1 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	go.opentelemetry.io/otel v1.24.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
