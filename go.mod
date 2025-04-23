@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/gogf/gf/v2 v2.9.0
-	github.com/liusuxian/go-toolkit v0.0.0-20250327021056-24a4bf3cb52b
+	github.com/liusuxian/go-toolkit v0.0.0-20250423115020-cb90b7e57993
 )
 
 require (
@@ -15,7 +15,7 @@ require (
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
-	github.com/fsnotify/fsnotify v1.8.0 // indirect
+	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
@@ -36,10 +36,10 @@ require (
 	go.opentelemetry.io/otel/metric v1.32.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.32.0 // indirect
 	go.opentelemetry.io/otel/trace v1.32.0 // indirect
-	golang.org/x/image v0.25.0 // indirect
+	golang.org/x/image v0.26.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
